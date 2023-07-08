@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form method="post" action="/register/">
+    <form method="post" action="{% url 'register' %}">
         {%  csrf_token %}
         <input type="text" name="phone_number">
         <input type="password" name="password">

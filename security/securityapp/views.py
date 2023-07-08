@@ -22,6 +22,12 @@ def register(request):
         phone_number = request.POST.get('phone_number')
         password = request.POST.get('password')
         phone_number="+91"+phone_number
+        user_all=User.objects.all()
+        for user in user_all:
+            if user.phone_number==phone_number:
+                print("phone number already exists")
+                return redirect('register')
+
 
         # Create a custom user
         user = User(phone_number=phone_number)
@@ -45,7 +51,7 @@ def register(request):
         request.session['crct_otp_code'] = otp_code
 
         # Redirect to OTP verification page
-        return render(request,'verify_otp.html')
+        return redirect('verify_otp')
 
     return render(request, 'register.html')
 
@@ -61,9 +67,6 @@ def verify_otp(request):
         user = User.objects.get(phone_number=phone_number)
         if user is None:
             return redirect('register')
-
-        
-
         # Verify the OTP code
         if otp_code==crct_code:
             # OTP code is valid, log in the user
