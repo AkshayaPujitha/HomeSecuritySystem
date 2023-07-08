@@ -6,6 +6,8 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('',views.home,name="home"),
-    path('gettoken/',obtain_auth_token)
+    path('gettoken/',obtain_auth_token),
+    path('register/',views.register,name="user registration"),
+    path('verify/',views.verify_otp,name="otp verification")
     
 ]

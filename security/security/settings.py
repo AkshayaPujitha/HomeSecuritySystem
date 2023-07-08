@@ -39,10 +39,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'rest_framework.authtoken',
-    'securityapp'
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'securityapp',
 ]
 
 MIDDLEWARE = [
+    'django_otp.middleware.OTPMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
