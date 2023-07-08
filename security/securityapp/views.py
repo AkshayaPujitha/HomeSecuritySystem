@@ -2,13 +2,15 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model, login
 from twilio.rest import Client
-from django_otp.plugins.otp_totp.models import TOTPDevice
+from .serializers import UserSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from dotenv import load_dotenv
 import os
 import pyotp
 
+User = get_user_model()
 load_dotenv()
-
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
@@ -16,44 +18,40 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 def home(request):
     return HttpResponse("hello world")
 
-User = get_user_model()
+
+@api_view(['POST','GET'])
 def register(request):
-    if request.method == 'POST':
-        phone_number = request.POST.get('phone_number')
-        password = request.POST.get('password')
-        phone_number="+91"+phone_number
-        user_all=User.objects.all()
-        for user in user_all:
-            if user.phone_number==phone_number:
-                print("phone number already exists")
-                return redirect('register')
+    if request.method=='POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            password = serializer.validated_data['password']
+            
+            # Generate a secret key for OTP
+            secret_key = pyotp.random_base32()
+
+            # Generate the OTP code
+            totp = pyotp.TOTP(secret_key)
+            otp_code = totp.now()
+
+            
+            user = User(phone_number=phone_number)
+            user.set_password(password)
+            user.save()
+
+            # Send the OTP code to the user via SMS
+            send_otp_code(phone_number, otp_code)
+            request.session['registration_phone_number'] = phone_number
+            request.session['crct_otp_code'] = otp_code
+
+            return redirect('verify_otp')
+        else:
+            return Response(serializer.errors, status=400)
+    else:
+        return render(request,'register.html')
+    
 
 
-        # Create a custom user
-        user = User(phone_number=phone_number)
-        user.set_password(password)
-        user.save()
-
-        # Generate a secret key for OTP
-        secret_key = pyotp.random_base32()
-
-        user.secret_key = pyotp.random_base32()  # Store the secret key directly on the user model
-        user.save()
-
-
-        # Generate the OTP code
-        totp = pyotp.TOTP(user.secret_key)
-        otp_code = totp.now()
-
-        # Send the OTP code to the user via SMS
-        send_otp_code(phone_number, otp_code)
-        request.session['registration_phone_number'] = phone_number
-        request.session['crct_otp_code'] = otp_code
-
-        # Redirect to OTP verification page
-        return redirect('verify_otp')
-
-    return render(request, 'register.html')
 
 def verify_otp(request):
     if request.method == 'POST':
@@ -63,13 +61,12 @@ def verify_otp(request):
         phone_number = request.session.get('registration_phone_number')
         print(phone_number)
 
-        # Retrieve the user based on the phone number
+        
         user = User.objects.get(phone_number=phone_number)
         if user is None:
             return redirect('register')
-        # Verify the OTP code
+        
         if otp_code==crct_code:
-            # OTP code is valid, log in the user
             login(request, user)
             try:
                 return redirect('dashboard')
