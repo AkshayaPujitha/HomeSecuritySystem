@@ -4,14 +4,49 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Verifiaction OTP</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#verify-button').click(function(event) {
+              event.preventDefault();
+          
+              var otpCode = $('#otp-code').val();
+              var data = {
+                otp_code: otpCode
+              };
+              $.ajax({
+                type: 'POST',
+                url: '/verify_otp/',
+                data: data,
+                success: function(response) {
+                    console.log('here')
+                    // Handle successful response
+                    if (response.redirect_url) {
+                        console.log('here')
+                        window.location.href = response.redirect_url;  // Redirect to the specified URL
+                    } else {
+                        console.log('Invalid response format');
+                    }
+                },
+                error: function(error) {
+                    // Handle error response
+                    console.log(error.responseJSON);
+                    // Display error message or perform any other error handling
+                }
+            });
+          
+            });
+          });
+    </script>
 </head>
 <body>
-    <form method="post" action="{% url 'verify_otp' %}">
-        {%  csrf_token %}
-        <input type="text" name="otp_code">
-        <input type="submit" value="submit">
+    <h1>OTP Verification</h1>
+    <form id="verify-otp-form" method="post">
+        {% csrf_token %}
+        <label for="otp-code">Enter OTP code:</label>
+        <input type="text" id="otp-code" name="otp_code" required>
+        <button type="submit">Verify</button>
     </form>
-    
 </body>
 </html>
