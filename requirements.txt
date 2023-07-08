@@ -22,6 +22,7 @@ phonenumbers==8.13.15
 pycryptodome==3.18.0
 Pygments==2.15.1
 PyJWT==2.7.0
+pyotp==2.8.0
 PySocks==1.7.1
 python-dotenv==1.0.0
 pytz==2023.3
