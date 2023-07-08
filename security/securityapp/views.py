@@ -50,29 +50,7 @@ def register(request):
     else:
         return render(request,'register.html')
     
-
-
-@api_view(['POST','GET'])
-def verify_otp(request):
-    serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
-
-    if serializer.is_valid():
-        otp_code = serializer.validated_data['otp_code']
-        crct_code = request.session.get('crct_otp_code')
-        phone_number = request.session.get('registration_phone_number')
-
-        user = get_object_or_404(User, phone_number=phone_number)
-        if otp_code == crct_code:
-            login(request, user)
-            return Response({'message': 'OTP verification successful. User logged in.'})
-        else:
-            user.delete()
-            return Response({'error_message': 'Invalid OTP code'}, status=400)
-   
-    return render(request, 'verify_otp.html')
-
-
-
+#Function to Send OTP
 def send_otp_code(phone_number, otp_code):
     # Set up the Twilio client
     account_sid = os.getenv('TWILIO_ACCOUNT_SID')
@@ -86,3 +64,32 @@ def send_otp_code(phone_number, otp_code):
         from_=twilio_phone_number,
         to=phone_number
     )
+
+@api_view(['POST','GET'])
+def verify_otp(request):
+    serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
+
+    if serializer.is_valid():
+        otp_code = serializer.validated_data['otp_code']
+        crct_code = request.session.get('crct_otp_code')
+        phone_number = request.session.get('registration_phone_number')
+        user = get_object_or_404(User, phone_number=phone_number)
+        if otp_code == crct_code:
+            print('here')
+            return redirect('login')
+        else:
+            user.delete()
+            return Response({'error_message': 'Invalid OTP code'}, status=400)
+   
+    return render(request, 'verify_otp.html')
+
+def login(request):
+    if request.method=='POST':
+        pass
+    return render(request,'login.html')
+
+def dashboard(request):
+    return render(request,'dashboard.html')
+
+
+
