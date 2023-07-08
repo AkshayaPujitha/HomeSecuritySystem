@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_list_or_404,get_object_or_404
 from django.http import HttpResponse
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login,authenticate
 from twilio.rest import Client
 from .serializers import UserSerializer,VerifyOTPSerializer
 from rest_framework.response import Response
@@ -83,10 +83,25 @@ def verify_otp(request):
    
     return render(request, 'verify_otp.html')
 
+@api_view(['POST','GET'])
 def login(request):
-    if request.method=='POST':
-        pass
-    return render(request,'login.html')
+    if request.method=="POST":
+        phone_number= request.data.get('phone_number')
+        password = request.data.get('password')
+
+        user = authenticate(request, phone_number=phone_number)
+        user.check_password(password)
+        if user is not None:
+            login(request, user)
+
+            # Retrieve the token associated with the user
+            token = user.auth_token.key
+
+            return Response({'token': token})
+        else:
+            return Response({'error': 'Invalid credentials'}, status=400)
+    else:
+        return render(request,'login.html')
 
 def dashboard(request):
     return render(request,'dashboard.html')
