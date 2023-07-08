@@ -18,18 +18,24 @@ def register(request):
     if request.method == 'POST':
         print('hi')
         phone_number = request.POST.get('phone_number')
+        phone_number="+91"+phone_number
         password = request.POST.get('password')
 
         User = get_user_model()
         user = User(phone_number=phone_number)
         user.set_password(password)
+        user.save()
 
         # Create an OTP device for the user
-        device = TOTPDevice(user=user, name='default', confirmed=True)
+        device = TOTPDevice(user=user, name=phone_number, confirmed=True)
         device.save()
 
         # Generate OTP code
         otp_code = device.generate_challenge()
+        print(otp_code)
+        if otp_code is None:
+            user.delete()
+            return render(request, 'register.html')
 
         # Send the OTP code via SMS
         client = Client(os.getenv('TWILIO_ACCOUNT_SID'), os.getenv('TWILIO_AUTH_TOKEN'))
@@ -43,8 +49,11 @@ def register(request):
         request.session['registration_otp_code'] = otp_code
         request.session['registration_phone_number'] = phone_number
         request.session['registration_password']=password
-
-        return redirect('verify_otp')
+        try:
+            return redirect('verify_otp')
+        except:
+            user.delete()
+            return render(request, 'register.html')
 
     return render(request, 'register.html')
 
@@ -66,6 +75,7 @@ def verify_otp(request):
             login(request, user)
             return redirect('dashboard')
         else:
+            user.delete()  # Rollback the user creation
             return render(request, 'verify_otp.html', {'message': 'Invalid OTP code. Please try again.'})
 
     return render(request, 'verify_otp.html')
