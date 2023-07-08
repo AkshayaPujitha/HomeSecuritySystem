@@ -1,8 +1,8 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_list_or_404,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model, login
 from twilio.rest import Client
-from .serializers import UserSerializer
+from .serializers import UserSerializer,VerifyOTPSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from dotenv import load_dotenv
@@ -52,37 +52,24 @@ def register(request):
     
 
 
-
+@api_view(['POST','GET'])
 def verify_otp(request):
-    if request.method == 'POST':
-        otp_code = request.POST.get('otp_code')
-        crct_code=request.session.get('crct_otp_code')
-        print(otp_code,crct_code)
-        phone_number = request.session.get('registration_phone_number')
-        print(phone_number)
+    serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
 
-        
-        user = User.objects.get(phone_number=phone_number)
-        if user is None:
-            return redirect('register')
-        
-        if otp_code==crct_code:
+    if serializer.is_valid():
+        otp_code = serializer.validated_data['otp_code']
+        crct_code = request.session.get('crct_otp_code')
+        phone_number = request.session.get('registration_phone_number')
+
+        user = get_object_or_404(User, phone_number=phone_number)
+        if otp_code == crct_code:
             login(request, user)
-            try:
-                return redirect('dashboard')
-            except:
-                return render(request,'dashboard.html')
+            return Response({'message': 'OTP verification successful. User logged in.'})
         else:
             user.delete()
-            # OTP code is invalid, display an error message
-            return render(request, 'verify_otp.html', {'error_message': 'Invalid OTP code'})
-
-    # Store the phone number in the session
-    phone_number = request.session.get('registration_phone_number')
-    if not phone_number:
-        return redirect('register')
-
-    return render(request, 'verify_otp.html', {'phone_number': phone_number})
+            return Response({'error_message': 'Invalid OTP code'}, status=400)
+   
+    return render(request, 'verify_otp.html')
 
 
 
