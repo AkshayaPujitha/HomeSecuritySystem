@@ -16,6 +16,7 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
+        print('hi')
         phone_number = request.POST.get('phone_number')
         password = request.POST.get('password')
 
