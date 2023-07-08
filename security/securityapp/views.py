@@ -41,32 +41,39 @@ def register(request):
 
         # Send the OTP code to the user via SMS
         send_otp_code(phone_number, otp_code)
+        request.session['registration_phone_number'] = phone_number
+        request.session['crct_otp_code'] = otp_code
 
         # Redirect to OTP verification page
-        return redirect('verify_otp')
+        return render(request,'verify_otp.html')
 
     return render(request, 'register.html')
 
 def verify_otp(request):
     if request.method == 'POST':
         otp_code = request.POST.get('otp_code')
-        phone_number = request.session.get('phone_number')
+        crct_code=request.session.get('crct_otp_code')
+        print(otp_code,crct_code)
+        phone_number = request.session.get('registration_phone_number')
+        print(phone_number)
 
         # Retrieve the user based on the phone number
         user = User.objects.get(phone_number=phone_number)
+        if user is None:
+            return redirect('register')
 
-        # Retrieve the secret key associated with the user
-        secret_key = user.profile.secret_key
-
-        # Create a TOTP object with the secret key
-        totp = pyotp.TOTP(secret_key)
+        
 
         # Verify the OTP code
-        if totp.verify(otp_code):
+        if otp_code==crct_code:
             # OTP code is valid, log in the user
             login(request, user)
-            return redirect('dashboard')
+            try:
+                return redirect('dashboard')
+            except:
+                return render(request,'dashboard.html')
         else:
+            user.delete()
             # OTP code is invalid, display an error message
             return render(request, 'verify_otp.html', {'error_message': 'Invalid OTP code'})
 
@@ -76,6 +83,7 @@ def verify_otp(request):
         return redirect('register')
 
     return render(request, 'verify_otp.html', {'phone_number': phone_number})
+
 
 
 def send_otp_code(phone_number, otp_code):
