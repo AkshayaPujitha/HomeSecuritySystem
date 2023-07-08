@@ -4,8 +4,12 @@ from django.contrib.auth import get_user_model, login,authenticate
 from twilio.rest import Client
 from .serializers import UserSerializer,VerifyOTPSerializer
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
+from rest_framework import generics,status
 from dotenv import load_dotenv
+from django.contrib.auth.hashers import check_password
+
 import os
 import pyotp
 
@@ -84,20 +88,27 @@ def verify_otp(request):
     return render(request, 'verify_otp.html')
 
 @api_view(['POST','GET'])
-def login(request):
+def login_view(request):
     if request.method=="POST":
+        http_request = request._request
         phone_number= request.data.get('phone_number')
         password = request.data.get('password')
 
-        user = authenticate(request, phone_number=phone_number)
-        user.check_password(password)
-        if user is not None:
-            login(request, user)
+        user = User.objects.get(phone_number=phone_number)
+        if user is not None and check_password(password, user.password):
+            print("here")
+            login(http_request,user)
 
             # Retrieve the token associated with the user
-            token = user.auth_token.key
+            token_obj,_ = Token.objects.get_or_create(user=user)
+            response = {
+                "message":"User Created Succesfully",
+                "token":token_obj.key
+            }
 
-            return Response({'token': token})
+            return Response(data=response,status=status.HTTP_200_OK)
+
+            
         else:
             return Response({'error': 'Invalid credentials'}, status=400)
     else:
