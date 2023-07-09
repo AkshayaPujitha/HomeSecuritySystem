@@ -1,10 +1,6 @@
 from django.db import models
-
-from django.contrib.auth.models import AbstractUser
-from phonenumber_field.modelfields import PhoneNumberField
-
-from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth import get_user_model
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, phone_number, password=None, **extra_fields):
@@ -48,3 +44,19 @@ class CustomUser(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+    
+User=get_user_model()
+
+class EventLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event_type=models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    details = models.TextField()
+
+class Alarm(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    alarm_type = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    details = models.TextField()
+    event_log = models.ForeignKey(EventLog, on_delete=models.CASCADE)
+
