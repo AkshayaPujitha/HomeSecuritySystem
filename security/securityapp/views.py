@@ -22,7 +22,7 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 def home(request):
     return HttpResponse("hello world")
 
-
+#Registration
 @api_view(['POST','GET'])
 def register(request):
     if request.method=='POST':
@@ -69,6 +69,7 @@ def send_otp_code(phone_number, otp_code):
         to=phone_number
     )
 
+#Verfication of OTP
 @api_view(['POST','GET'])
 def verify_otp(request):
     serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
@@ -88,6 +89,7 @@ def verify_otp(request):
     return render(request, 'verify_otp.html')
 
 
+#Login
 @api_view(['POST','GET'])
 def login_view(request):
     if request.method=="POST":
@@ -118,8 +120,6 @@ def login_view(request):
     else:
         return render(request,'login.html')
 
-def dashboard(request):
-    return render(request,'dashboard.html')
 
 
 
