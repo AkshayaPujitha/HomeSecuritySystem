@@ -42,13 +42,13 @@ def register(request):
             user = User(phone_number=phone_number)
             user.set_password(password)
             user.save()
-
+            print(otp_code)
             # Send the OTP code to the user via SMS
-            send_otp_code(phone_number, otp_code)
+            #send_otp_code(phone_number, otp_code)
             request.session['registration_phone_number'] = phone_number
             request.session['crct_otp_code'] = otp_code
 
-            return redirect('verify_otp')
+            return Response(status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=400)
     else:
@@ -80,12 +80,13 @@ def verify_otp(request):
         user = get_object_or_404(User, phone_number=phone_number)
         if otp_code == crct_code:
             print('here')
-            return redirect('login')
+            return Response(status=status.HTTP_200_OK)
         else:
             user.delete()
             return Response({'error_message': 'Invalid OTP code'}, status=400)
    
     return render(request, 'verify_otp.html')
+
 
 @api_view(['POST','GET'])
 def login_view(request):

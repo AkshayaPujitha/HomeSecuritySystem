@@ -5,40 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verifiaction OTP</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#verify-button').click(function(event) {
-              event.preventDefault();
-          
-              var otpCode = $('#otp-code').val();
-              var data = {
-                otp_code: otpCode
-              };
-              $.ajax({
-                type: 'POST',
-                url: '/verify_otp/',
-                data: data,
-                success: function(response) {
-                    console.log('here')
-                    // Handle successful response
-                    if (response.redirect_url) {
-                        console.log('here')
-                        window.location.href = response.redirect_url;  // Redirect to the specified URL
-                    } else {
-                        console.log('Invalid response format');
-                    }
-                },
-                error: function(error) {
-                    // Handle error response
-                    console.log(error.responseJSON);
-                    // Display error message or perform any other error handling
-                }
-            });
-          
-            });
-          });
-    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
 </head>
 <body>
     <h1>OTP Verification</h1>
@@ -48,5 +16,36 @@
         <input type="text" id="otp-code" name="otp_code" required>
         <button type="submit">Verify</button>
     </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#verify-otp-form').submit(function(event) {
+                event.preventDefault();
+                
+                var otp_code = $('input[name="otp_code"]').val();
+                var data = {
+                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                    otp_code:otp_code
+                    
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/verify_otp/',  // Replace with your API endpoint URL
+                    data: data,
+                    success: function(response) {
+                        console.log(response);
+                        window.location.href = '/dashboard/'
+                    },
+                    error: function(error) {
+                        // Handle error response
+                        console.log(error.responseJSON);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>

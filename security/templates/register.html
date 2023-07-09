@@ -4,14 +4,46 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Verify OTP</title>
 </head>
+
 <body>
-    <form method="post" action="{% url 'register' %}">
-        {%  csrf_token %}
-        <input type="text" name="phone_number">
-        <input type="password" name="password">
-        <input type="submit" value="register" name="register">
+    <form id="verify-form" method="post">
+        {% csrf_token %}
+        <input type="text" name="phone_number" placeholder="Phone Number">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Verify</button>
     </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#verify-form').submit(function(event) {
+                event.preventDefault();
+                
+                var phone_number = $('input[name="phone_number"]').val();
+                var password = $('input[name="password"]').val();
+                var data = {
+                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                    phone_number: phone_number,
+                    password: password
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/register/',  // Replace with your API endpoint URL
+                    data: data,
+                    success: function(response) {
+                        console.log(response);
+                        window.location.href = '/verify_otp/'
+                    },
+                    error: function(error) {
+                        // Handle error response
+                        console.log(error.responseJSON);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
