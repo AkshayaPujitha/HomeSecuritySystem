@@ -17,34 +17,66 @@
 
     </form>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#verify-form').submit(function(event) {
-                event.preventDefault();
-                
-                var phone_number = $('input[name="phone_number"]').val();
-                var password = $('input[name="password"]').val();
-                var data = {
-                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-                    phone_number: phone_number,
-                    password: password
-                };
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/login/',  // Replace with your API endpoint URL
-                    data: data,
-                    success: function(response) {
-                        console.log(response);
-                        window.location.href = '/dashboard/'
-                    },
-                    error: function(error) {
-                        // Handle error response
-                        console.log(error.responseJSON);
-                    }
-                });
+   <script>
+    $(document).ready(function() {
+        // Submit the login form
+        $('#verify-form').submit(function(event) {
+            event.preventDefault();
+            
+            var phone_number = $('input[name="phone_number"]').val();
+            var password = $('input[name="password"]').val();
+            var data = {
+                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                phone_number: phone_number,
+                password: password
+            };
+    
+            $.ajax({
+                type: 'POST',
+                url: '/login/',  // Replace with your API endpoint URL
+                data: data,
+                success: function(response) {
+                    console.log(response);
+                    localStorage.setItem('token', response.token);
+                    console.log("Login successful");
+    
+                    // Proceed to token authentication
+                    performTokenAuthentication();
+                },
+                error: function(error) {
+                    console.log(error.responseJSON);
+                    // Handle error response
+                }
             });
         });
-    </script>
+    
+        // Perform token authentication
+        function performTokenAuthentication() {
+            // Get the token from the local storage
+            var token = localStorage.getItem('token');
+            console.log("Token:", token);
+    
+            $.ajax({
+                type: 'GET',
+                url: '/dashboard/',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Authorization', 'Token ' + token);
+                },
+                success: function(response) {
+                    console.log(response);
+                    console.log("Token authentication successful");
+    
+                    // Redirect to the dashboard with token authentication
+                    window.location.href = '/dashboard/';
+                },
+                error: function(error) {
+                    console.log(error.responseJSON);
+                    // Handle error response
+                }
+            });
+        }
+    });
+    
+   </script>
 </body>
 </html>
