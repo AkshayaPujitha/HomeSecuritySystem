@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_otp',
     'django_otp.plugins.otp_totp',
+    'dashboard',
     'securityapp',
+    
 ]
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_SECURE = True  # Adjust according to your project requirements
@@ -53,7 +55,6 @@ MIDDLEWARE = [
     
     'django_otp.middleware.OTPMiddleware',
     "django.middleware.security.SecurityMiddleware",
-    
     "django.contrib.sessions.middleware.SessionMiddleware",
     'securityapp.middleware.VerifyOTPRedirectMiddleware',
     "django.middleware.common.CommonMiddleware",
