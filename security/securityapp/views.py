@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_list_or_404,get_object_or_404
 from django.http import HttpResponse
-from django.contrib.auth import get_user_model, login,authenticate
+from django.contrib.auth import get_user_model, login
 from twilio.rest import Client
 from .serializers import UserSerializer,VerifyOTPSerializer
 from rest_framework.response import Response

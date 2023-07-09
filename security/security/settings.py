@@ -46,16 +46,22 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',
     'securityapp',
 ]
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_SECURE = True  # Adjust according to your project requirements
 
 MIDDLEWARE = [
+    
     'django_otp.middleware.OTPMiddleware',
     "django.middleware.security.SecurityMiddleware",
+    
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'securityapp.middleware.VerifyOTPRedirectMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
 ]
 
 ROOT_URLCONF = "security.urls"
