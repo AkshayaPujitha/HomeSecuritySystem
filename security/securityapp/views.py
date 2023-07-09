@@ -94,24 +94,27 @@ def login_view(request):
         http_request = request._request
         phone_number= request.data.get('phone_number')
         password = request.data.get('password')
+        try:
+            user = User.objects.get(phone_number=phone_number)
+            if user is not None and check_password(password, user.password):
+                print("here")
+                login(http_request,user)
 
-        user = User.objects.get(phone_number=phone_number)
-        if user is not None and check_password(password, user.password):
-            print("here")
-            login(http_request,user)
+                # Retrieve the token associated with the user
+                token_obj,_ = Token.objects.get_or_create(user=user)
+                response = {
+                    "message":"Login Succesfully",
+                    "token":token_obj.key
+                }
 
-            # Retrieve the token associated with the user
-            token_obj,_ = Token.objects.get_or_create(user=user)
-            response = {
-                "message":"User Created Succesfully",
-                "token":token_obj.key
-            }
+                return Response(data=response,status=status.HTTP_200_OK)
 
-            return Response(data=response,status=status.HTTP_200_OK)
+                
+            else:
+                return Response({'error': 'Invalid credentials'}, status=400)
+        except:
+            return Response({'error': 'phone number doesnt exists'}, status=400)
 
-            
-        else:
-            return Response({'error': 'Invalid credentials'}, status=400)
     else:
         return render(request,'login.html')
 

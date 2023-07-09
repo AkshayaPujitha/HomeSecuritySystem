@@ -1,5 +1,7 @@
 from .models import CustomUser
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,3 +24,4 @@ class VerifyOTPSerializer(serializers.Serializer):
         if value != crct_code:
             raise serializers.ValidationError('Invalid OTP code')
         return value
+

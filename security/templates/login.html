@@ -7,13 +7,44 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="{% url 'login' %}" method="post">
+    <form id="verify-form" method="post">
         {% csrf_token %}
-        <input type="text" name="phone_number">
-        <input type="password" name="password">
-        <input type="submit" value="submit">
+        <input type="text" name="phone_number" placeholder="Phone Number">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
 
 
     </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#verify-form').submit(function(event) {
+                event.preventDefault();
+                
+                var phone_number = $('input[name="phone_number"]').val();
+                var password = $('input[name="password"]').val();
+                var data = {
+                    csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+                    phone_number: phone_number,
+                    password: password
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/login/',  // Replace with your API endpoint URL
+                    data: data,
+                    success: function(response) {
+                        console.log(response);
+                        window.location.href = '/dashboard/'
+                    },
+                    error: function(error) {
+                        // Handle error response
+                        console.log(error.responseJSON);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
