@@ -6,7 +6,6 @@ from .models import EventLog,Alarm
 
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def dashboard(request):
     return render(request,'dashboard.html')
