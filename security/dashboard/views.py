@@ -82,16 +82,30 @@ def upload(request):
         ImageUpload.objects.create(user=user,image=img,name=name)
         return HttpResponse("Uploaded Sucessfully")
     
-def encodings(request):
-    img = ImageUpload.objects.filter(user=request.user).first()
-    if img:
-        print(settings.MEDIA_ROOT)
-        image_path = settings.MEDIA_ROOT +'/'+str(img.image)
-        print(image_path)
-        image = cv2.imread(image_path)
-        print(image)
-        return HttpResponse("Image displayed successfully.")
-    return HttpResponse("Image not found.")
+def encodings(user):
+    images = ImageUpload.objects.filter(user=user)
+    imgList=[]
+    ids=[]
+    for image in images:
+        image_path = settings.MEDIA_ROOT +'/'+str(image.image)
+        ids.append(image.id)
+        imgList.append(cv2.imread(image_path))
+    print(len(imgList))
+    print(ids)
+    encodeList=[]
+    idList=[]
+    for image,id in zip(imgList,ids):
+        img=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+        print(img)
+        #print(face_recognition.face_encodings(img))
+        encodings=face_recognition.face_encodings(img)[0]
+        if encodings:
+            encodeList.append(encodings[0])
+            idList.append(id)
+    encode_with_known_ids=[encodeList,idList]
+        
+    return encode_with_known_ids
+    
 
 
 

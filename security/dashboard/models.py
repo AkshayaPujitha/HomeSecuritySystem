@@ -28,4 +28,7 @@ class ImageUpload(models.Model):
     image=models.ImageField(blank=False,null=False,upload_to='images/')
     name=models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.name
+
 

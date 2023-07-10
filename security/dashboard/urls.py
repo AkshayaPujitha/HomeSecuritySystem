@@ -9,6 +9,7 @@ urlpatterns=[
      path('',views.dashboard,name='dashboard'),
      path('stimulate/',views.simulate_events,name="stimulation"),
      path('upload/',views.upload,name="upload"),
+     #path('encodings/',views.encodings,name='encodings')
      #path('get_images/',views.get_images,name="get")
 
 ]
