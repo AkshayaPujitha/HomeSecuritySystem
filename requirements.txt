@@ -19,6 +19,7 @@ markdown-it-py==3.0.0
 mdurl==0.1.2
 multidict==6.0.4
 phonenumbers==8.13.15
+Pillow==10.0.0
 pycryptodome==3.18.0
 Pygments==2.15.1
 PyJWT==2.7.0
