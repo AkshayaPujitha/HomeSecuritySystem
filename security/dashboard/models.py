@@ -22,3 +22,10 @@ class Alarm(models.Model):
 
     def __str__(self):
         return self.alarm_type
+    
+class ImageUpload(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image=models.ImageField(blank=False,null=False,upload_to='images/')
+    name=models.CharField(max_length=50)
+
+

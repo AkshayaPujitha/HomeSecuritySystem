@@ -2,12 +2,13 @@ from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import permission_classes,authentication_classes,api_view
 from rest_framework.permissions import IsAuthenticated
-from .models import EventLog,Alarm
+from .models import EventLog,Alarm,ImageUpload
 from django.http import HttpResponse
 import random
 import datetime
 from django.utils import timezone
-
+import cv2
+import face_recognition
 
 
 @api_view(['GET'])
@@ -60,8 +61,17 @@ def random_date(start, end):
     random_second = random.randint(0, delta.total_seconds())
     return start + datetime.timedelta(seconds=random_second)
 
-# Functions to trigger alarms
-# ...
+def upload(request):
+    if request.method=='POST':
+        img=request.POST.get('image')
+        name=request.POST.get('name')
+        user=request.user
+        ImageUpload.objects.create(user=user,image=img,name=name)
+        return HttpResponse("Uploaded Sucessfully")
 
-# Call the simulate_events() function to simulate events
+
+
+
+    
+
 
