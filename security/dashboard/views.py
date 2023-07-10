@@ -73,14 +73,43 @@ def upload(request):
         print(img)
         name=request.POST.get('name')
         user=request.user
-        
-        # Save the uploaded image to the specified path
-        #image_path = os.path.join(settings.MEDIA_ROOT, 'images',str(img))
-        #with default_storage.open(image_path, 'wb+') as destination:
-        #    for chunk in img.chunks():
-        #        destination.write(chunk)
         ImageUpload.objects.create(user=user,image=img,name=name)
         return HttpResponse("Uploaded Sucessfully")
+#Webcam
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def detect(request):
+    user=request.user
+    encodeList,id=encodings(user)
+    #print(encodeList,id) 
+    cap=cv2.VideoCapture(0)
+    i=0
+    cnt=0
+    while i<500 :
+        ret,frame=cap.read()
+        imgS=cv2.resize(frame,(0,0),None,0.25,0.25)
+        imgS=cv2.cvtColor(imgS,cv2.COLOR_BGR2RGB)
+        faceCurFrame=face_recognition.face_locations(imgS)
+        encodingCurFrame=face_recognition.face_encodings(imgS,faceCurFrame)
+        for encodeFace,faceLoc in zip(encodingCurFrame,faceCurFrame):
+            matches=face_recognition.compare_faces(encodeList,encodeFace)
+            faceDist=face_recognition.face_distance(encodeList,encodeFace)
+            print(matches,faceDist)
+            ind=np.argmin(faceDist)
+            if not matches[ind]:
+                cnt+=1
+                print("Unknown face detected")
+    
+        i+=1
+    print(cnt)
+    if cnt>=50:
+        event_time = generate_random_timestamp()
+        EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
+
+
+    return HttpResponse("succeed")   
+
+
     
 def encodings(user):
     images = ImageUpload.objects.filter(user=user)
@@ -90,21 +119,16 @@ def encodings(user):
         image_path = settings.MEDIA_ROOT +'/'+str(image.image)
         ids.append(image.id)
         imgList.append(cv2.imread(image_path))
-    print(len(imgList))
-    print(ids)
     encodeList=[]
     idList=[]
     for image,id in zip(imgList,ids):
+        #print(id)
         img=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-        print(img)
-        #print(face_recognition.face_encodings(img))
-        encodings=face_recognition.face_encodings(img)[0]
+        encodings=face_recognition.face_encodings(img)
         if encodings:
             encodeList.append(encodings[0])
             idList.append(id)
-    encode_with_known_ids=[encodeList,idList]
-        
-    return encode_with_known_ids
+    return encodeList,idList
     
 
 
