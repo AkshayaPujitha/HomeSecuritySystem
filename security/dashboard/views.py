@@ -9,6 +9,11 @@ import datetime
 from django.utils import timezone
 import cv2
 import face_recognition
+from django.core.files.storage import default_storage
+import os
+from django.conf import settings
+
+
 
 
 @api_view(['GET'])
@@ -63,9 +68,16 @@ def random_date(start, end):
 
 def upload(request):
     if request.method=='POST':
-        img=request.POST.get('image')
+        img=request.FILES.get('image')
+        print(img)
         name=request.POST.get('name')
         user=request.user
+        
+        # Save the uploaded image to the specified path
+        image_path = os.path.join(settings.MEDIA_ROOT, 'images',name+'.jpg')
+        with default_storage.open(image_path, 'wb+') as destination:
+            for chunk in img.chunks():
+                destination.write(chunk)
         ImageUpload.objects.create(user=user,image=img,name=name)
         return HttpResponse("Uploaded Sucessfully")
 
