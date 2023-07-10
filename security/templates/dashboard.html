@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
 </head>
 <body>
-    hi
+    <h1>Welcome to the Dashboard</h1>
+
+    <form method="post" action="/dashboard/upload/">
+        {% csrf_token %}
+    
+        <label for="id_name">Name:</label>
+        <input type="text" id="id_name" name="name" required>
+    
+        <label for="id_image">Image:</label>
+        <input type="file" id="id_image" name="image" accept="image/*" required>
+    
+        <button type="submit">Upload</button>
+    </form>
+    
 </body>
 </html>
