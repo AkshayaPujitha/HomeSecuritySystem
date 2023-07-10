@@ -22,3 +22,9 @@ class Alarm(models.Model):
 
     def __str__(self):
         return self.alarm_type
+
+class Images(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name=models.CharField(max_length=50)
+    images=models.ImageField(blank=False)
+
