@@ -5,10 +5,11 @@ from twilio.rest import Client
 from .serializers import UserSerializer,VerifyOTPSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework import generics,status
 from dotenv import load_dotenv
 from django.contrib.auth.hashers import check_password
+from rest_framework.permissions import AllowAny
 
 import os
 import pyotp
@@ -24,6 +25,7 @@ def home(request):
 
 #Registration
 @api_view(['POST','GET'])
+@permission_classes([AllowAny])
 def register(request):
     if request.method=='POST':
         serializer = UserSerializer(data=request.data)
@@ -50,6 +52,7 @@ def register(request):
 
             return Response(status=status.HTTP_200_OK)
         else:
+            print("here")
             return Response(serializer.errors, status=400)
     else:
         return render(request,'register.html')
