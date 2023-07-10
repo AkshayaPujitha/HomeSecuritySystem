@@ -76,13 +76,16 @@ def upload(request):
         ImageUpload.objects.create(user=user,image=img,name=name)
         return HttpResponse("Uploaded Sucessfully")
 #Webcam
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def detect(request):
     user=request.user
     encodeList,id=encodings(user)
-    print(encodeList,id) 
+    #print(encodeList,id) 
     cap=cv2.VideoCapture(0)
     i=0
-    while i<100 :
+    cnt=0
+    while i<500 :
         ret,frame=cap.read()
         imgS=cv2.resize(frame,(0,0),None,0.25,0.25)
         imgS=cv2.cvtColor(imgS,cv2.COLOR_BGR2RGB)
@@ -92,8 +95,16 @@ def detect(request):
             matches=face_recognition.compare_faces(encodeList,encodeFace)
             faceDist=face_recognition.face_distance(encodeList,encodeFace)
             print(matches,faceDist)
-        
+            ind=np.argmin(faceDist)
+            if not matches[ind]:
+                cnt+=1
+                print("Unknown face detected")
+    
         i+=1
+    print(cnt)
+    if cnt>=50:
+        event_time = generate_random_timestamp()
+        EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
 
 
     return HttpResponse("succeed")   
@@ -111,7 +122,7 @@ def encodings(user):
     encodeList=[]
     idList=[]
     for image,id in zip(imgList,ids):
-        print(id)
+        #print(id)
         img=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
         encodings=face_recognition.face_encodings(img)
         if encodings:
