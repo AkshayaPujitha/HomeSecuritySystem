@@ -12,6 +12,7 @@ import face_recognition
 from django.core.files.storage import default_storage
 import os
 from django.conf import settings
+import numpy as np
 
 
 
@@ -74,12 +75,24 @@ def upload(request):
         user=request.user
         
         # Save the uploaded image to the specified path
-        image_path = os.path.join(settings.MEDIA_ROOT, 'images',name+'.jpg')
-        with default_storage.open(image_path, 'wb+') as destination:
-            for chunk in img.chunks():
-                destination.write(chunk)
+        #image_path = os.path.join(settings.MEDIA_ROOT, 'images',str(img))
+        #with default_storage.open(image_path, 'wb+') as destination:
+        #    for chunk in img.chunks():
+        #        destination.write(chunk)
         ImageUpload.objects.create(user=user,image=img,name=name)
         return HttpResponse("Uploaded Sucessfully")
+    
+def encodings(request):
+    img = ImageUpload.objects.filter(user=request.user).first()
+    if img:
+        print(settings.MEDIA_ROOT)
+        image_path = settings.MEDIA_ROOT +'/'+str(img.image)
+        print(image_path)
+        image = cv2.imread(image_path)
+        print(image)
+        return HttpResponse("Image displayed successfully.")
+    return HttpResponse("Image not found.")
+
 
 
 
