@@ -21,7 +21,7 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
 def home(request):
-    return render(request,'trail.html')
+    return render(request,'home.html')
 
 #Registration
 @api_view(['POST','GET'])
