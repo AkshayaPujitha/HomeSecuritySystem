@@ -39,9 +39,9 @@
                     console.log(response);
                     localStorage.setItem('token', response.token);
                     console.log("Login successful");
-                    window.location.href = '/dashboard/'
+                    //window.location.href = '/dashboard/'
                     // Proceed to token authentication
-                    //performTokenAuthentication();
+                    performTokenAuthentication();
                 },
                 error: function(error) {
                     console.log(error.responseJSON);
@@ -67,7 +67,7 @@
                     console.log("Token authentication successful");
                     var dashboardUrl = '/dashboard/';
                     // Redirect to the dashboard with token authentication
-                    window.location.href = '/dashboard/';
+                    window.location.href = dashboardUrl;
                 },
                 error: function(error) {
                     console.log(error.responseJSON);

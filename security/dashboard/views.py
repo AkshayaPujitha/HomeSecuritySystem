@@ -19,6 +19,7 @@ import numpy as np
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+#@authentication_classes([TokenAuthentication])
 def dashboard(request):
     return render(request,'dashboard.html')
 
@@ -110,7 +111,7 @@ def detect(request):
     return HttpResponse("succeed")   
 
 
-    
+ #Encodings of Images Uploaded by user   
 def encodings(user):
     images = ImageUpload.objects.filter(user=user)
     imgList=[]
