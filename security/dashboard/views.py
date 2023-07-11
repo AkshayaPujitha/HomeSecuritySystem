@@ -113,15 +113,11 @@ def detect(request):
         event=EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
         trigger_intrusion_alarm(request.user,event)
         save_image(intruder,request.user)
-        
-        #IntrusionImage.objects.create(image=intruder,user=request.user)
-        
-
 
     return HttpResponse("succeed")   
 
 
- #Encodings of Images Uploaded by user   
+#Encodings of Images Uploaded by user   
 def encodings(user):
     images = ImageUpload.objects.filter(user=user)
     imgList=[]
@@ -145,13 +141,14 @@ def trigger_intrusion_alarm(user,event):
     Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=generate_random_timestamp())
     print("store image and send in dash board and alarm it")
     try:
-        message="An unknow face detected Ceck the website for more info "
+        message="An unknow face detected Ceck the website for more info<WEBSITE LINK> "
         send_sms(user,message)
-    
     except:
         pass
     
     return 
+
+#Sends SMS to only verified numbers of twilio
 def send_sms(user,message):
     phone_number=user.phone_number
     phone_number='+91'+phone_number
@@ -171,7 +168,7 @@ def save_image(intruder,user):
     image.save(image_io, format='JPEG') 
     content_file = ContentFile(image_io.getvalue())
     filename = f'intruder_image{uuid.uuid4()}.jpg'
-    intrusion_image = IntrusionImage.objects.create(image=filename, user=user)
+    intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=generate_random_timestamp())
     intrusion_image.image.save('image.jpg', content_file)
 
 

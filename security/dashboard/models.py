@@ -34,6 +34,7 @@ class ImageUpload(models.Model):
 class IntrusionImage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     image=models.ImageField(blank=False,null=False,upload_to='images/')
+    timestamp= models.DateTimeField(auto_now_add=True)
     def __str__(self):
          return f"IntrusionImage {self.id}"
 
