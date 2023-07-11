@@ -72,19 +72,24 @@ def send_otp_code(phone_number, otp_code):
 #Verfication of OTP
 @api_view(['POST','GET'])
 def verify_otp(request):
-    serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
-
-    if serializer.is_valid():
-        otp_code = serializer.validated_data['otp_code']
-        crct_code = request.session.get('crct_otp_code')
-        phone_number = request.session.get('registration_phone_number')
-        user = get_object_or_404(User, phone_number=phone_number)
-        if otp_code == crct_code:
-            print('here')
-            return Response(status=status.HTTP_200_OK)
+    if request.method=='POST':
+        serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            print(otp_code,crct_code)
+            otp_code = serializer.validated_data['otp_code']
+            crct_code = request.session.get('crct_otp_code')
+            phone_number = request.session.get('registration_phone_number')
+            user = get_object_or_404(User, phone_number=phone_number)
+            if otp_code == crct_code:
+                print(otp_code,crct_code)
+                request.session['registration_phone_number'] = None
+                return Response(status=status.HTTP_200_OK)
+            else:
+                user.delete()
+                return Response({'error': 'Invalid OTP code'}, status=400)
         else:
-            user.delete()
-            return Response({'error_message': 'Invalid OTP code'}, status=400)
+            request.session['registration_phone_number'] = None
+            return Response({'error': 'Invalid OTP code'}, status=400)
    
     return render(request, 'verify_otp.html')
 
@@ -99,7 +104,6 @@ def login_view(request):
         try:
             user = User.objects.get(phone_number=phone_number)
             if user is not None and check_password(password, user.password):
-                print("here")
                 login(http_request,user)
 
                 # Retrieve the token associated with the user
