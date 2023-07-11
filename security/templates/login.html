@@ -55,15 +55,18 @@
             // Get the token from the local storage
             var token = localStorage.getItem('token');
             console.log("Token:", token);
-    
+            var csrf_token=$('input[name="csrfmiddlewaretoken"]').val();
             $.ajax({
                 type: 'GET',
                 url: '/dashboard/',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader('Authorization', 'Token ' + token);
+                headers: {
+                    //'X-CSRFToken': csrf_token,
+                    'Authorization': 'Bearer ' + token
+
                 },
                 success: function(response) {
                     console.log(response);
+                    console.log(token)
                     console.log("Token authentication successful");
                     var dashboardUrl = '/dashboard/';
                     // Redirect to the dashboard with token authentication

@@ -13,8 +13,15 @@ from django.core.files.storage import default_storage
 import os
 from django.conf import settings
 import numpy as np
+from dotenv import load_dotenv
+from django.contrib.auth import get_user_model
+from twilio.rest import Client
 
-
+User = get_user_model()
+load_dotenv()
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
 
 @api_view(['GET'])
@@ -23,34 +30,23 @@ import numpy as np
 def dashboard(request):
     return render(request,'dashboard.html')
 
-# Function to simulate events
+
 def simulate_events(request):
     event_types = ['glass_break', 'door_opened', 'smoke_detector']
-
-    # Generate a random number of events (1 to 3)
     num_events = random.randint(1, 3)
-
-    # Generate events
     events = []
     for _ in range(num_events):
         event_type = random.choice(event_types)
         event_time = generate_random_timestamp()
         user=request.user
-        # Create the event object
         event = EventLog.objects.create(user=user,event_type=event_type, timestamp=event_time)
         events.append(event)
-
-        # Check if the event triggers an alarm
         if event_type == 'glass_break':
             pass
-            #trigger_glass_break_alarm()
         elif event_type == 'door_opened':
             pass
-            #trigger_door_opened_alarm()
         elif event_type == 'smoke_detector':
             trigger_smoke_detector_alarm(user,event_time,event)
-
-    # Return the created event objects
     return HttpResponse("hello")
 
 def trigger_smoke_detector_alarm(user,event_time,event):
@@ -68,6 +64,7 @@ def random_date(start, end):
     random_second = random.randint(0, delta.total_seconds())
     return start + datetime.timedelta(seconds=random_second)
 
+##To Upload images
 def upload(request):
     if request.method=='POST':
         img=request.FILES.get('image')
@@ -76,13 +73,15 @@ def upload(request):
         user=request.user
         ImageUpload.objects.create(user=user,image=img,name=name)
         return HttpResponse("Uploaded Sucessfully")
+    
 #Webcam
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def detect(request):
     user=request.user
     encodeList,id=encodings(user)
-    #print(encodeList,id) 
+    #print(encodeList,id)
+    intruder=0
     cap=cv2.VideoCapture(0)
     i=0
     cnt=0
@@ -98,14 +97,16 @@ def detect(request):
             print(matches,faceDist)
             ind=np.argmin(faceDist)
             if not matches[ind]:
+                intruder=frame
                 cnt+=1
                 print("Unknown face detected")
     
         i+=1
     print(cnt)
-    if cnt>=50:
+    if cnt>=75:
         event_time = generate_random_timestamp()
-        EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
+        event=EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
+        trigger_intrusion_alarm(request.user,event)
 
 
     return HttpResponse("succeed")   
@@ -130,6 +131,33 @@ def encodings(user):
             encodeList.append(encodings[0])
             idList.append(id)
     return encodeList,idList
+
+def trigger_intrusion_alarm(user,event):
+    Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=generate_random_timestamp())
+    print("store image and send in dash board and alarm it")
+    try:
+        message="An unknow face detected Ceck the website for more info "
+        send_sms(user,message)
+    
+    except:
+        pass
+    
+    return 
+def send_sms(user,message):
+    phone_number=user.phone_number
+    phone_number='+91'+phone_number
+    account_sid = TWILIO_ACCOUNT_SID
+    auth_token = TWILIO_AUTH_TOKEN
+    twilio_phone_number = TWILIO_PHONE_NUMBER
+    client = Client(account_sid, auth_token)
+    message = client.messages.create(
+        body=f"Your OTP for registration: {message}",
+        from_=twilio_phone_number,
+        to=phone_number
+    )
+
+
+
     
 
 

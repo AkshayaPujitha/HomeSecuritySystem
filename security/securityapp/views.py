@@ -59,13 +59,10 @@ def register(request):
     
 #Function to Send OTP
 def send_otp_code(phone_number, otp_code):
-    # Set up the Twilio client
     account_sid = os.getenv('TWILIO_ACCOUNT_SID')
     auth_token = os.getenv('TWILIO_AUTH_TOKEN')
     twilio_phone_number = os.getenv('TWILIO_PHONE_NUMBER')
     client = Client(account_sid, auth_token)
-
-    # Send the OTP code via SMS
     message = client.messages.create(
         body=f"Your OTP for registration: {otp_code}",
         from_=twilio_phone_number,
