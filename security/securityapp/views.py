@@ -123,3 +123,5 @@ def login_view(request):
 
 
 
+def trail(request):
+    return render(request,'trail.html')
