@@ -19,6 +19,7 @@ from PIL import Image
 from django.core.files.base import ContentFile
 from io import BytesIO
 import numpy as np
+import uuid
 
 User = get_user_model()
 load_dotenv()
@@ -111,13 +112,8 @@ def detect(request):
         event_time = generate_random_timestamp()
         event=EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
         trigger_intrusion_alarm(request.user,event)
-        image = Image.fromarray(intruder)
-        image_io = BytesIO()
-        image.save(image_io, format='JPEG') 
-        content_file = ContentFile(image_io.getvalue())
-        intrusion_image = IntrusionImage.objects.create(image='image.jpg', user=request.user)
-        intrusion_image.image.save('image.jpg', content_file)
-
+        save_image(intruder,request.user)
+        
         #IntrusionImage.objects.create(image=intruder,user=request.user)
         
 
@@ -168,6 +164,15 @@ def send_sms(user,message):
         from_=twilio_phone_number,
         to=phone_number
     )
+
+def save_image(intruder,user):
+    image = Image.fromarray(intruder)
+    image_io = BytesIO()
+    image.save(image_io, format='JPEG') 
+    content_file = ContentFile(image_io.getvalue())
+    filename = f'intruder_image{uuid.uuid4()}.jpg'
+    intrusion_image = IntrusionImage.objects.create(image=filename, user=user)
+    intrusion_image.image.save('image.jpg', content_file)
 
 
 
