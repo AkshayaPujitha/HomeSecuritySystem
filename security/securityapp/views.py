@@ -113,9 +113,9 @@ def login_view(request):
 
                 
             else:
-                return Response({'error': 'Invalid credentials'}, status=400)
+                return Response({'error': 'Invalid Credentials Password invalid'}, status=400)
         except:
-            return Response({'error': 'phone number doesnt exists'}, status=400)
+            return Response({'error': 'Phone Number doesnt exists'}, status=400)
 
     else:
         return render(request,'login.html')
