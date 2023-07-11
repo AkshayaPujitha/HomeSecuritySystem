@@ -2,20 +2,23 @@ from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import permission_classes,authentication_classes,api_view
 from rest_framework.permissions import IsAuthenticated
-from .models import EventLog,Alarm,ImageUpload
+from .models import EventLog,Alarm,ImageUpload,IntrusionImage
 from django.http import HttpResponse
 import random
 import datetime
 from django.utils import timezone
 import cv2
 import face_recognition
-from django.core.files.storage import default_storage
 import os
 from django.conf import settings
 import numpy as np
 from dotenv import load_dotenv
 from django.contrib.auth import get_user_model
 from twilio.rest import Client
+from PIL import Image
+from django.core.files.base import ContentFile
+from io import BytesIO
+import numpy as np
 
 User = get_user_model()
 load_dotenv()
@@ -85,7 +88,7 @@ def detect(request):
     cap=cv2.VideoCapture(0)
     i=0
     cnt=0
-    while i<500 :
+    while i<200 :
         ret,frame=cap.read()
         imgS=cv2.resize(frame,(0,0),None,0.25,0.25)
         imgS=cv2.cvtColor(imgS,cv2.COLOR_BGR2RGB)
@@ -103,10 +106,20 @@ def detect(request):
     
         i+=1
     print(cnt)
-    if cnt>=75:
+   # print(intruder)
+    if cnt>=40:
         event_time = generate_random_timestamp()
         event=EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
         trigger_intrusion_alarm(request.user,event)
+        image = Image.fromarray(intruder)
+        image_io = BytesIO()
+        image.save(image_io, format='JPEG') 
+        content_file = ContentFile(image_io.getvalue())
+        intrusion_image = IntrusionImage.objects.create(image='image.jpg', user=request.user)
+        intrusion_image.image.save('image.jpg', content_file)
+
+        #IntrusionImage.objects.create(image=intruder,user=request.user)
+        
 
 
     return HttpResponse("succeed")   

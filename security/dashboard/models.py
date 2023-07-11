@@ -31,4 +31,11 @@ class ImageUpload(models.Model):
     def __str__(self):
         return self.name
 
+class IntrusionImage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image=models.ImageField(blank=False,null=False,upload_to='images/')
+    def __str__(self):
+         return f"IntrusionImage {self.id}"
+
+
 
