@@ -39,14 +39,14 @@ def register(request):
             # Generate the OTP code
             totp = pyotp.TOTP(secret_key)
             otp_code = totp.now()
-
-            
             user = User(phone_number=phone_number)
             user.set_password(password)
             user.save()
-            print(otp_code)
+            try:
             # Send the OTP code to the user via SMS
-            #send_otp_code(phone_number, otp_code)
+                send_otp_code(phone_number, otp_code)
+            except:
+                print(otp_code)
             request.session['registration_phone_number'] = phone_number
             request.session['crct_otp_code'] = otp_code
 
@@ -119,8 +119,6 @@ def login_view(request):
 
     else:
         return render(request,'login.html')
-
-
 
 
 def trail(request):

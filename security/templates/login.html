@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <title>Document</title>
+    <title>Login</title>
 </head>
 <style>
     .navbar {
@@ -81,15 +81,15 @@
         <form id="verify-form" method="post">
             {% csrf_token %}
         <div style="margin:2%">
-          <label for="phone_number">Phone Number:</label>
-          <input type="text" id="phone_number" name="phone_number" placeholder="+911234567890" required>
+          <label for="phone_number" style="font-size: 18px;">Phone Number:</label>
+          <input type="text" id="phone_number"  style="font-size: 18px;" name="phone_number" placeholder="+911234567890" required>
         </div>
         <div style="margin:2%">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" placeholder="Password" required>
+          <label for="password" style="font-size: 18px;" >Password:</label>
+          <input type="password" style="font-size: 18px;" id="password" name="password" placeholder="Password" required>
         </div>
         <div style="margin:2%">
-          <button type="submit">Login</button>
+          <button type="submit" style="font-size: 18px;">Login</button>
         </div>
         </form>
       </div>
@@ -136,7 +136,7 @@
         $('.error-message').remove();
         
         // Create error message element
-        var errorMessage = $('<p class="error-message" style="color:red">' + message + '</p>');
+        var errorMessage = $('<p class="error-message" style="color:red" font-size:20px>' + message + '</p>');
         
         // Add error message to the form
         $('.container form').prepend(errorMessage);
