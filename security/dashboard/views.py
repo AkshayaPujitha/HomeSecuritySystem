@@ -98,6 +98,10 @@ def detect(request):
     cap=cv2.VideoCapture(0)
     i=0
     cnt=0
+    if len(encodeList)==0:
+        return render(request,'detect.html',{'result':'Images not been Uploaded in database'})
+
+
     while i<200 :
         ret,frame=cap.read()
         imgS=cv2.resize(frame,(0,0),None,0.25,0.25)
@@ -110,11 +114,13 @@ def detect(request):
             print(matches,faceDist)
             ind=np.argmin(faceDist)
             if not matches[ind]:
-                intruder=frame
+                intruder=imgS
                 cnt+=1
                 print("Unknown face detected")
     
         i+=1
+        #cv2.imshow("webcam",frame)
+        #cv2.waitKey(1)
     print(cnt)
    # print(intruder)
     if cnt>=40:
@@ -124,7 +130,7 @@ def detect(request):
         intrusion_image=save_image(intruder,request.user)
         return render(request,'detect.html',{'result':'unknown','image':intrusion_image})
 
-    return render(request,'detect.html',{'message':'known'})
+    return render(request,'detect.html',{'result':'Known Face Detected'})
 
 
 #Encodings of Images Uploaded by user   
@@ -155,7 +161,6 @@ def trigger_intrusion_alarm(user,event):
         send_sms(user,message)
     except:
         pass
-    
     return 
 
 #Sends SMS to only verified numbers of twilio
