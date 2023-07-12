@@ -8,7 +8,7 @@ certifi==2023.5.7
 charset-normalizer==3.2.0
 click==8.1.4
 defusedxml==0.7.1
-Django==4.2.3
+Django>=3.2.0
 django-otp==1.2.2
 django-otp-yubikey==1.0.1
 django-phonenumber-field==7.1.0
