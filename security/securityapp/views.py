@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_list_or_404,get_object_or_404
 from django.http import HttpResponse
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login,logout
 from twilio.rest import Client
 from .serializers import UserSerializer,VerifyOTPSerializer
 from rest_framework.response import Response
@@ -83,6 +83,7 @@ def verify_otp(request):
             if otp_code == crct_code:
                 print(otp_code,crct_code)
                 request.session['registration_phone_number'] = None
+                request.session['crct_otp_code'] = None
                 return Response(status=status.HTTP_200_OK)
             else:
                 user.delete()
@@ -124,6 +125,9 @@ def login_view(request):
     else:
         return render(request,'login.html')
 
+def logout_user(request):
+    logout(request)
+    return redirect('home')
 
 def trail(request):
     return render(request,'trail.html')
