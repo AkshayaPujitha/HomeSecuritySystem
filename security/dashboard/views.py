@@ -76,8 +76,6 @@ def random_date(start, end):
     random_second = random.randint(0, delta.total_seconds())
     return start + datetime.timedelta(seconds=random_second)
 
-
-
 ##To Upload images
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
