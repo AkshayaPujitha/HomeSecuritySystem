@@ -12,6 +12,29 @@
         margin: 0;
         padding: 1.5%;
       }
+      .dashboard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+      
+      .events, .alarms, .intruders {
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+      }
+      
+      .events h2, .alarms h2, .intruders h2 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+      
+      /* Adjust styling as needed for event, alarm, and intruder content */
+      
     </style>
 <body>
     <nav class="navbar navbar-inverse">
@@ -23,6 +46,7 @@
             <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="#">Home</a></li>
             <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:upload' %}">Upload Images</a></li>
             <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:detect' %}">Detect</a></li>
+            <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:upload' %}">Uploaded Images</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
 
@@ -31,7 +55,34 @@
         </div>
     </nav>
     <div>
-    <h1>Welcome to the Dashboard</h1>
+        <div class="dashboard">
+            <div class="events">
+              <h2>Events</h2>
+              <ul>
+                {% for event in events %}
+                <li>{{ event.event_type }}</li>
+                <li>{{ event.timestamp }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="alarms">
+              <h2>Alarms</h2>
+              <ul>
+                {% for alarm in alarms %}
+                <li>{{ alarm.alarm_type }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="intruders">
+              <h2>Intruder Images</h2>
+              <ul>
+                {% for image in images %}
+                <li><img src="{{ image.image.url }}" alt="Intusion image"></li>
+                {% endfor %}
+              </ul>
+              
+            </div>
+          </div>
 
    
 </div>

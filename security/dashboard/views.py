@@ -36,7 +36,11 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 @permission_classes([IsAuthenticated])
 #@authentication_classes([TokenAuthentication])
 def dashboard(request):
-    return render(request,'dashboard.html')
+    events=EventLog.objects.filter(user=request.user)
+    alarms=Alarm.objects.filter(user=request.user)
+    intruder_images=IntrusionImage.objects.filter(user=request.user)
+
+    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images})
 
 
 def simulate_events(request):
@@ -72,6 +76,8 @@ def random_date(start, end):
     random_second = random.randint(0, delta.total_seconds())
     return start + datetime.timedelta(seconds=random_second)
 
+
+
 ##To Upload images
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
@@ -93,7 +99,6 @@ def upload(request):
 def detect(request):
     user=request.user
     encodeList,id=encodings(user)
-    #print(encodeList,id)
     intruder=0
     cap=cv2.VideoCapture(0)
     i=0
@@ -119,10 +124,7 @@ def detect(request):
                 print("Unknown face detected")
     
         i+=1
-        #cv2.imshow("webcam",frame)
-        #cv2.waitKey(1)
     print(cnt)
-   # print(intruder)
     if cnt>=40:
         event_time = generate_random_timestamp()
         event=EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
@@ -145,7 +147,6 @@ def encodings(user):
     encodeList=[]
     idList=[]
     for image,id in zip(imgList,ids):
-        #print(id)
         img=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
         encodings=face_recognition.face_encodings(img)
         if encodings:
