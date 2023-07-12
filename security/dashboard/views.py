@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import permission_classes,authentication_classes,api_view
 from rest_framework.permissions import IsAuthenticated
@@ -69,6 +69,8 @@ def random_date(start, end):
     return start + datetime.timedelta(seconds=random_second)
 
 ##To Upload images
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
 def upload(request):
     if request.method=='POST':
         img=request.FILES.get('image')
@@ -76,7 +78,9 @@ def upload(request):
         name=request.POST.get('name')
         user=request.user
         ImageUpload.objects.create(user=user,image=img,name=name)
-        return HttpResponse("Uploaded Sucessfully")
+        return render(request,'upload_images.html')
+    return render(request,'upload_images.html')
+
     
 #Webcam
 @api_view(['GET'])
@@ -114,7 +118,7 @@ def detect(request):
         trigger_intrusion_alarm(request.user,event)
         save_image(intruder,request.user)
 
-    return HttpResponse("succeed")   
+    return render(request,"dashboard.html")
 
 
 #Encodings of Images Uploaded by user   
