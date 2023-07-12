@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .navbar {
+        margin: 0;
+        padding: 1.5%;
+      }
+    .container {
+      text-align: center;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 18px;
+      color: #777;
+    }
+  </style>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#" style="color:rgba(255, 255, 255, 0.944)">Home Security System</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="{%url 'dashboard:dashboard' %}" style="color:rgba(255, 255, 255, 0.944);font-size:18px">Home</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{% url 'logout' %}" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+          </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Face Detection Result</h1>
+        <div class="message">
+          {% if result == 'unknown' %}
+            Unknown face detected
+          {% else %}
+            Known face detected
+          {% endif %}
+        </div>
+        {% if result == 'unknown' %}
+          <img src="{{ image.image.url }}" alt="Detected Face">
+        {% endif %}
+        <div class="footer">
+          &copy; 2023 Home Security System. All rights reserved.
+        </div>
+      </div>
+    
+</body>
+</html>

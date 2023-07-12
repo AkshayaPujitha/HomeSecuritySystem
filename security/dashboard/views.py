@@ -121,9 +121,10 @@ def detect(request):
         event_time = generate_random_timestamp()
         event=EventLog.objects.create(user=user,timestamp=event_time,event_type="Unknown Face Detected")
         trigger_intrusion_alarm(request.user,event)
-        save_image(intruder,request.user)
+        intrusion_image=save_image(intruder,request.user)
+        return render(request,'detect.html',{'result':'unknown','image':intrusion_image})
 
-    return render(request,"dashboard.html")
+    return render(request,'detect.html',{'message':'known'})
 
 
 #Encodings of Images Uploaded by user   
@@ -179,6 +180,7 @@ def save_image(intruder,user):
     filename = f'intruder_image{uuid.uuid4()}.jpg'
     intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=generate_random_timestamp())
     intrusion_image.image.save('image.jpg', content_file)
+    return intrusion_image
 
 
 
