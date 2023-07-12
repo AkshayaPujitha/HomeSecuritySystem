@@ -20,6 +20,10 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 import numpy as np
 import uuid
+from .serializer import ImageUploadSerializer
+from rest_framework.response import Response
+from rest_framework import generics,status
+
 
 User = get_user_model()
 load_dotenv()
@@ -72,14 +76,15 @@ def random_date(start, end):
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def upload(request):
-    if request.method=='POST':
-        img=request.FILES.get('image')
-        print(img)
-        name=request.POST.get('name')
-        user=request.user
-        ImageUpload.objects.create(user=user,image=img,name=name)
-        return render(request,'upload_images.html')
-    return render(request,'upload_images.html')
+    if request.method == 'POST':
+        serializer = ImageUploadSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return render(request, 'upload_images.html')
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return render(request, 'upload_images.html')
 
     
 #Webcam

@@ -70,8 +70,9 @@
 </nav>
 <div class="container">
 <div>
+  <div id="message" style="color:green;font-size:18px"></div>
   <h1>Upload Image</h1>
-  <form enctype="multipart/form-data" action="/dashboard/upload/"  method="post">
+  <form enctype="multipart/form-data"  id="upload-form"   method="post">
     {% csrf_token %}
     <div class="form-group">
       <label for="id_name">Name:</label>
@@ -81,6 +82,37 @@
     </div>
     <button type="submit">Upload</button>
   </form>
+  <script>
+    $(document).ready(function() {
+      $('#upload-form').submit(function(event) {
+        event.preventDefault();
+    
+        // Get the form data
+        var formData = new FormData(this);
+    
+        // Send the AJAX request
+        $.ajax({
+          type: 'POST',
+          url: '/dashboard/upload/',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            // Handle the success response
+            console.log(response);
+            $('#message').text('Uploaded successfully');
+          },
+          error: function(error) {
+            // Handle the error response
+            console.log(error.responseJSON);
+            $('#message').text('Error uploading image');
+            // Display error message or perform any other error handling
+          }
+        });
+      });
+    });
+    
+  </script>
 </div>
 </div>
 
