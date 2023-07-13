@@ -45,6 +45,7 @@ def register(request):
             try:
             # Send the OTP code to the user via SMS
                 send_otp_code(phone_number, otp_code)
+                
             except:
                 print(otp_code)
             request.session['registration_phone_number'] = phone_number
@@ -75,7 +76,6 @@ def verify_otp(request):
     if request.method=='POST':
         serializer = VerifyOTPSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            print(otp_code,crct_code)
             otp_code = serializer.validated_data['otp_code']
             crct_code = request.session.get('crct_otp_code')
             phone_number = request.session.get('registration_phone_number')
