@@ -38,9 +38,9 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 @permission_classes([IsAuthenticated])
 #@authentication_classes([TokenAuthentication])
 def dashboard(request):
-    events=EventLog.objects.filter(user=request.user)
-    alarms=Alarm.objects.filter(user=request.user)
-    intruder_images=IntrusionImage.objects.filter(user=request.user)
+    events=EventLog.objects.filter(user=request.user).order_by('-timestamp')
+    alarms=Alarm.objects.filter(user=request.user).order_by('-timestamp')
+    intruder_images=IntrusionImage.objects.filter(user=request.user).order_by('-timestamp')
 
     return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images})
 

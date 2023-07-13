@@ -156,6 +156,11 @@
           {% for image in images %}
                 <h4>{{image.name}}</h4>
                 <img src="{{ image.image.url }}" alt="Uploaded Image">
+                <ul>
+                  <li>
+                    {{image.timestamp}}
+                  </li>
+                </ul>
                 
                 <br>
           {% endfor %}
