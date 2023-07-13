@@ -23,6 +23,8 @@ import uuid
 from .serializer import ImageUploadSerializer
 from rest_framework.response import Response
 from rest_framework import generics,status
+from django.utils import timezone
+
 
 
 User = get_user_model()
@@ -153,10 +155,10 @@ def encodings(user):
     return encodeList,idList
 
 def trigger_intrusion_alarm(user,event):
-    Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=generate_random_timestamp())
+    Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=timezone.now())
     print("Store image and send in Dash board and alarm it")
     try:
-        message="An unknow face detected Ceck the website for more info<WEBSITE LINK> "
+        message="An unknow face detected Check the website for more info<WEBSITE LINK> "
         send_sms(user,message)
     except:
         pass
@@ -182,7 +184,7 @@ def save_image(intruder,user):
     image.save(image_io, format='JPEG') 
     content_file = ContentFile(image_io.getvalue())
     filename = f'intruder_image{uuid.uuid4()}.jpg'
-    intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=generate_random_timestamp())
+    intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=timezone.now())
     intrusion_image.image.save('image.jpg', content_file)
     return intrusion_image
 
@@ -202,8 +204,6 @@ def uploaded_images(request):
         except:
             pass
         
-    request.method='GET'
-
     images=ImageUpload.objects.filter(user=request.user)
     return render(request,'uploaded_image.html',{'images':images})
 
