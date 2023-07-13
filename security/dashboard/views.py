@@ -69,6 +69,7 @@ def generate_graph(dates,event_cnt):
     plt.legend()
     graph_path =  settings.MEDIA_ROOT +'/images/graph.png'
     plt.savefig(graph_path)
+    graph_path='/media/images/graph.png'
     plt.close()
 
     # Save the graph to a file

@@ -156,6 +156,7 @@
           {% for image in images %}
                 <h4>{{image.name}}</h4>
                 <img src="{{ image.image.url }}" alt="Uploaded Image">
+                
                 <ul>
                   <li>
                     {{image.timestamp}}
@@ -171,7 +172,6 @@
         <div class="graph-section">
           <img src="{{graph}}" alt="Analysis Graph">
         </div>
-    
-
+  
 </body>
 </html>
