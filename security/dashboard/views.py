@@ -24,7 +24,10 @@ from .serializer import ImageUploadSerializer
 from rest_framework.response import Response
 from rest_framework import generics,status
 from django.utils import timezone
-
+from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to non-interactive
 
 
 User = get_user_model()
@@ -41,8 +44,38 @@ def dashboard(request):
     events=EventLog.objects.filter(user=request.user).order_by('-timestamp')
     alarms=Alarm.objects.filter(user=request.user).order_by('-timestamp')
     intruder_images=IntrusionImage.objects.filter(user=request.user).order_by('-timestamp')
+    dates=[event.timestamp.strftime('%Y-%m-%d') for event in events]
+    event_cnt=[]
+    for date in dates:
+        event_c=0
+        for event in events:
+            if event.timestamp.strftime('%Y-%m-%d')==date:
+                event_c+=1
+            else:
+                break
+        event_cnt.append(event_c)
 
-    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images})
+    
+    graph_path=generate_graph(dates,event_cnt)
+    print(graph_path)
+
+    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
+
+def generate_graph(dates,event_cnt):
+    plt.plot(dates, event_cnt, label='Events')
+    plt.xlabel('Date')
+    plt.ylabel('Event Count')
+    plt.title('Event Count Over Time')
+    plt.legend()
+    graph_path =  settings.MEDIA_ROOT +'/images/graph.png'
+    plt.savefig(graph_path)
+    plt.close()
+
+    # Save the graph to a file
+    
+    return graph_path
+
+
 
 
 def simulate_events(request):
