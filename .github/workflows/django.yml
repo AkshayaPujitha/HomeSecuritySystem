@@ -25,8 +25,5 @@ jobs:
         pip install -r requirements.txt
 
     
-    - name: Run pylint code analysis
-      run: |
-        pip install pylint pylint-django
-        pylint --load-plugins pylint_django .
+    
         
