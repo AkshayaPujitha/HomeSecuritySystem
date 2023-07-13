@@ -23,6 +23,11 @@ import uuid
 from .serializer import ImageUploadSerializer
 from rest_framework.response import Response
 from rest_framework import generics,status
+from django.utils import timezone
+from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to non-interactive
 
 
 User = get_user_model()
@@ -36,11 +41,42 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 @permission_classes([IsAuthenticated])
 #@authentication_classes([TokenAuthentication])
 def dashboard(request):
-    events=EventLog.objects.filter(user=request.user)
-    alarms=Alarm.objects.filter(user=request.user)
-    intruder_images=IntrusionImage.objects.filter(user=request.user)
+    events=EventLog.objects.filter(user=request.user).order_by('-timestamp')
+    alarms=Alarm.objects.filter(user=request.user).order_by('-timestamp')
+    intruder_images=IntrusionImage.objects.filter(user=request.user).order_by('-timestamp')
+    dates=[event.timestamp.strftime('%Y-%m-%d') for event in events]
+    event_cnt=[]
+    for date in dates:
+        event_c=0
+        for event in events:
+            if event.timestamp.strftime('%Y-%m-%d')==date:
+                event_c+=1
+            else:
+                break
+        event_cnt.append(event_c)
 
-    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images})
+    
+    graph_path=generate_graph(dates,event_cnt)
+    print(graph_path)
+
+    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
+
+def generate_graph(dates,event_cnt):
+    plt.plot(dates, event_cnt, label='Events')
+    plt.xlabel('Date')
+    plt.ylabel('Event Count')
+    plt.title('Event Count Over Time')
+    plt.legend()
+    graph_path =  settings.MEDIA_ROOT +'/images/graph.png'
+    plt.savefig(graph_path)
+    graph_path='/media/images/graph.png'
+    plt.close()
+
+    # Save the graph to a file
+    
+    return graph_path
+
+
 
 
 def simulate_events(request):
@@ -153,10 +189,10 @@ def encodings(user):
     return encodeList,idList
 
 def trigger_intrusion_alarm(user,event):
-    Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=generate_random_timestamp())
-    print("store image and send in dash board and alarm it")
+    Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=timezone.now())
+    print("Store image and send in Dash board and alarm it")
     try:
-        message="An unknow face detected Ceck the website for more info<WEBSITE LINK> "
+        message="An unknow face detected Check the website for more info<WEBSITE LINK> "
         send_sms(user,message)
     except:
         pass
@@ -182,9 +218,28 @@ def save_image(intruder,user):
     image.save(image_io, format='JPEG') 
     content_file = ContentFile(image_io.getvalue())
     filename = f'intruder_image{uuid.uuid4()}.jpg'
-    intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=generate_random_timestamp())
+    intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=timezone.now())
     intrusion_image.image.save('image.jpg', content_file)
     return intrusion_image
+
+
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def uploaded_images(request):
+    if request.method=='POST':
+        id=request.POST.get('image_id')
+        #print(id)
+        if id is None:
+            images=ImageUpload.objects.filter(user=request.user)
+            return render(request,'uploaded_image.html',{'images':images})
+        try:
+            image=ImageUpload.objects.get(id=id)
+            image.delete()
+        except:
+            pass
+        
+    images=ImageUpload.objects.filter(user=request.user)
+    return render(request,'uploaded_image.html',{'images':images})
 
 
 

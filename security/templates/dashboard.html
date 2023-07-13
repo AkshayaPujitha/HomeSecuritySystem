@@ -8,35 +8,90 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <style>
+    .body{
+      font-size: 21px;
+    }
     .navbar {
         margin: 0;
         padding: 1.5%;
       }
-      .dashboard {
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+      }
+  
+      .events {
+        flex-basis: 50%;
+        background-color: #f0f0f0;
+        padding: 20px;
+      }
+  
+      .alarms {
+        flex-basis: 50%;
+        background-color: #f0f0f0;
+        padding: 20px;
+      }
+  
+      .intruder-photos {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+      }
+  
+      .intruder-photo {
+        flex-basis: 200px;
+        margin: 10px;
+      }
+  
+      .list-item {
+        margin-bottom: 10px;
+      }
+      .main_list{
+        font-size: 18px;
+      }
+      .sub_list{
+        font-size: 12px;
+      }
+     
+      .container1 {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px;
+        justify-content: center;
+        margin-top: 1%;
       }
       
-      .events, .alarms, .intruders {
-        width: 100%;
-        margin-bottom: 20px;
-        padding: 20px;
+      .heading-box {
         background-color: #f0f0f0;
-        border: 1px solid #ccc;
+        padding: 20px;
       }
       
-      .events h2, .alarms h2, .intruders h2 {
-        color: #333;
-        font-size: 24px;
-        margin-bottom: 10px;
+      .heading {
+        text-align: center;
+        margin: 0;
       }
+
+    .image-section {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .image-section img {
+      flex-basis: 200px;
+      margin: 10px;
+    }
       
       /* Adjust styling as needed for event, alarm, and intruder content */
       
     </style>
-<body>
+<body class="body">
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
           <div class="navbar-header">
@@ -46,7 +101,7 @@
             <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="#">Home</a></li>
             <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:upload' %}">Upload Images</a></li>
             <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:detect' %}">Detect</a></li>
-            <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:upload' %}">Uploaded Images</a></li>
+            <li class="active" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><a href="{% url 'dashboard:uploaded_images' %}">Uploaded Images</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
 
@@ -55,36 +110,68 @@
         </div>
     </nav>
     <div>
-        <div class="dashboard">
-            <div class="events">
-              <h2>Events</h2>
-              <ul>
-                {% for event in events %}
-                <li>{{ event.event_type }}</li>
-                <li>{{ event.timestamp }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="alarms">
-              <h2>Alarms</h2>
-              <ul>
-                {% for alarm in alarms %}
-                <li>{{ alarm.alarm_type }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="intruders">
-              <h2>Intruder Images</h2>
-              <ul>
-                {% for image in images %}
-                <li><img src="{{ image.image.url }}" alt="Intusion image"></li>
-                {% endfor %}
-              </ul>
-              
-            </div>
+      <div class="container" style="width:-webkit-fill-available">
+        <div class="events">
+          <h2>Events</h2>
+          <ul id="events-list">
+            
+            {%  for event in events %}
+            <li class="main-list"> {{event.event_type}}</li>
+            <ul>
+              <li class="sub-list">
+              {{event.timestamp}}
+            </li>
+            </ul>
+            {% endfor %}
+          
+          </ul>
+        </div>
+    
+        <div class="alarms">
+          <h2>Alarms</h2>
+          <ul id="alarms-list">
+            
+            {%  for alarm in alarms %}
+            <li> {{alarm.alarm_type}}</li>
+            <ul>
+              <li>
+                {{alarm.event_log}}
+              </li>
+              <li>
+              {{alarm.timestamp}}
+            </li>
+            
+            </ul>
+            {% endfor %}
+          </ul>
+        </div>
+        </div>
+        <div class="container1">
+          <div class="heading-box">
+            <h2 class="heading">Intruder Images</h2>
           </div>
-
-   
-</div>
+        <div class="image-section">
+          
+          {% if images %}
+          {% for image in images %}
+                <h4>{{image.name}}</h4>
+                <img src="{{ image.image.url }}" alt="Uploaded Image">
+                
+                <ul>
+                  <li>
+                    {{image.timestamp}}
+                  </li>
+                </ul>
+                
+                <br>
+          {% endfor %}
+          {% else %}
+          <p class="no-images-message">No Intuder images yet.</p>
+        {% endif %}
+        </div>
+        <div class="graph-section">
+          <img src="{{graph}}" alt="Analysis Graph">
+        </div>
+  
 </body>
 </html>
