@@ -154,7 +154,7 @@ def encodings(user):
 
 def trigger_intrusion_alarm(user,event):
     Alarm.objects.create(user=user,event_log=event,alarm_type="Intrusion",timestamp=generate_random_timestamp())
-    print("store image and send in dash board and alarm it")
+    print("Store image and send in Dash board and alarm it")
     try:
         message="An unknow face detected Ceck the website for more info<WEBSITE LINK> "
         send_sms(user,message)
@@ -185,6 +185,27 @@ def save_image(intruder,user):
     intrusion_image = IntrusionImage.objects.create(image=filename, user=user,timestamp=generate_random_timestamp())
     intrusion_image.image.save('image.jpg', content_file)
     return intrusion_image
+
+
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def uploaded_images(request):
+    if request.method=='POST':
+        id=request.POST.get('image_id')
+        #print(id)
+        if id is None:
+            images=ImageUpload.objects.filter(user=request.user)
+            return render(request,'uploaded_image.html',{'images':images})
+        try:
+            image=ImageUpload.objects.get(id=id)
+            image.delete()
+        except:
+            pass
+        
+    request.method='GET'
+
+    images=ImageUpload.objects.filter(user=request.user)
+    return render(request,'uploaded_image.html',{'images':images})
 
 
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Uploaded Images</title>
+</head>
+<style>
+    .navbar {
+        margin-bottom: 2%;
+        padding: 1.5%;
+      }
+    /* CSS styles for image container */
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+  
+      /* CSS styles for individual image */
+      .image-container .image-card {
+        margin: 10px;
+        text-align: center;
+      }
+  
+      .image-container .image-card img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+      }
+  
+      .image-container .image-card .image-id {
+        display: none;
+      }
+  
+      .image-container .image-card .delete-button {
+        margin-top: 10px;
+        background-color: #ff0000;
+        color: #ffffff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+  
+      .no-images-message {
+        text-align: center;
+        color: gray;
+        font-size: 18px;
+        margin-top: 50px;
+      }
+  
+      h1 {
+        text-align: center;
+      }
+  </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#" style="color:rgba(255, 255, 255, 0.944)">Home Security System</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="{%url 'dashboard:dashboard' %}" style="color:rgba(255, 255, 255, 0.944);font-size:18px">Home</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{% url 'logout' %}" style="color:rgba(255, 255, 255, 0.944);font-size:18px"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+          </ul>
+        </div>
+    </nav>
+  
+    <h1>Uploaded Images</h1>
+
+    {% if images %}
+      <div class="image-container">
+        {% for image in images %}
+          <div class="image-card">
+            <h4>{{image.name}}</h4>
+            <img src="{{ image.image.url }}" alt="Uploaded Image">
+            
+            <br>
+            <form action="{% url 'dashboard:uploaded_images' %}" method="post">
+                <input type="hidden" class="image-id" value="{{ image.id }}" name="image_id">
+                {% csrf_token %}
+            <button class="delete-button" type="submit">Delete</button>
+        </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-images-message">No uploaded images yet.</p>
+    {% endif %}
+    
+</body>
+</html>
