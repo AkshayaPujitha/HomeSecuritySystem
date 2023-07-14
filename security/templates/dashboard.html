@@ -92,6 +92,33 @@
     flex-basis: 200px;
     margin: 10px;
   }
+  .image-section {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 20px;
+  }
+  
+  .image-item {
+    flex-basis: 200px;
+    margin: 10px;
+  }
+  
+  .image-container {
+    position: relative;
+  }
+  
+  .timestamp {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px;
+    font-size: 12px;
+  }
 
   /* Adjust styling as needed for event, alarm, and intruder content */
 </style>
@@ -163,21 +190,21 @@
         <div class="image-section">
 
           {% if images %}
-          {% for image in images %}
-          <h4>{{image.name}}</h4>
-          <img src="{{ image.image.url }}" alt="Uploaded Image">
+<div class="image-section">
+  {% for image in images %}
+  <div class="image-item">
+    <h4>{{ image.name }}</h4>
+    <div class="image-container">
+      <img src="{{ image.image.url }}" alt="Uploaded Image">
+      <span class="timestamp">{{ image.timestamp }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="no-images-message">No Intruder images yet.</p>
+{% endif %}
 
-          <ul>
-            <li>
-              {{image.timestamp}}
-            </li>
-          </ul>
-
-          <br>
-          {% endfor %}
-          {% else %}
-          <p class="no-images-message">No Intuder images yet.</p>
-          {% endif %}
         </div>
       </div>
       <div>
