@@ -82,11 +82,11 @@ def dashboard(request):
             else:
                 break
         intruder_cnt.append(intruder_c)
-    graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates)
+    graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,request.user)
 
     return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
 
-def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates):
+def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,user):
     plt.plot(unique_dates, event_cnt, label='Events')
     plt.plot(unique_dates, alarm_cnt, label='Alarms')
     plt.plot(unique_dates, intruder_cnt, label='Intruder Invasion')
@@ -94,16 +94,13 @@ def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates):
     plt.ylabel('Count')
     plt.title('Analysis Over Time')
     plt.legend()
-    graph_path =  settings.MEDIA_ROOT +'/images/graph.png'
+    graph_path =  settings.MEDIA_ROOT +f'/images/graph_{user.id}.png'
     plt.savefig(graph_path)
-    graph_path='/media/images/graph.png'
+    graph_path=f'/media/images/graph_{user.id}.png'
     plt.close()
 
     # Save the graph to a file
-    
     return graph_path
-
-
 
 
 def simulate_events(request):
