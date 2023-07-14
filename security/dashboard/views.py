@@ -48,7 +48,14 @@ def dashboard(request):
     datesA=[event.timestamp.strftime('%Y-%m-%d') for event in alarms]
     datesI=[event.timestamp.strftime('%Y-%m-%d') for event in intruder_images]
     event_cnt=[]
-    for date in datesE:
+    unique_dates = []
+
+    for date in datesE + datesA+datesI:
+        if date not in unique_dates:
+            unique_dates.append(date)
+
+    
+    for date in unique_dates:
         event_c=0
         for event in events:
             if event.timestamp.strftime('%Y-%m-%d')==date:
@@ -57,7 +64,7 @@ def dashboard(request):
                 break
         event_cnt.append(event_c)
     alarm_cnt=[]
-    for date in datesA:
+    for date in unique_dates:
         alarm_c=0
         for alarm in alarms:
             if alarm.timestamp.strftime('%Y-%m-%d')==date:
@@ -65,8 +72,9 @@ def dashboard(request):
             else:
                 break
         alarm_cnt.append(alarm_c)
+    
     intruder_cnt=[]
-    for date in datesI:
+    for date in unique_dates:
         intruder_c=0
         for intruder in intruder_images:
             if intruder.timestamp.strftime('%Y-%m-%d')==date:
@@ -74,16 +82,14 @@ def dashboard(request):
             else:
                 break
         intruder_cnt.append(intruder_c)
-   
-    graph_path=generate_graph(datesE,event_cnt,datesA,alarm_cnt,datesI,intruder_cnt)
-    print(graph_path)
+    graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates)
 
     return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
 
-def generate_graph(dates,event_cnt,datesA,alarm_cnt,datesI,intruder_cnt):
-    plt.plot(dates, event_cnt, label='Events')
-    plt.plot(datesA, alarm_cnt, label='Alarms')
-    plt.plot(datesI, intruder_cnt, label='Intruder Invasion')
+def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates):
+    plt.plot(unique_dates, event_cnt, label='Events')
+    plt.plot(unique_dates, alarm_cnt, label='Alarms')
+    plt.plot(unique_dates, intruder_cnt, label='Intruder Invasion')
     plt.xlabel('Date')
     plt.ylabel('Count')
     plt.title('Analysis Over Time')
