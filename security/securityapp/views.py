@@ -60,6 +60,8 @@ def register(request):
     
 #Function to Send OTP
 def send_otp_code(phone_number, otp_code):
+    if phone_number[0]!='+':
+        phone_number='+91'+phone_number
     account_sid = os.getenv('TWILIO_ACCOUNT_SID')
     auth_token = os.getenv('TWILIO_AUTH_TOKEN')
     twilio_phone_number = os.getenv('TWILIO_PHONE_NUMBER')

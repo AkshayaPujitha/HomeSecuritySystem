@@ -225,7 +225,8 @@ def trigger_intrusion_alarm(user,event):
 #Sends SMS to only verified numbers of twilio
 def send_sms(user,message):
     phone_number=user.phone_number
-    phone_number='+91'+phone_number
+    if phone_number[0]!='+':
+        phone_number='+91'+phone_number
     account_sid = TWILIO_ACCOUNT_SID
     auth_token = TWILIO_AUTH_TOKEN
     twilio_phone_number = TWILIO_PHONE_NUMBER
