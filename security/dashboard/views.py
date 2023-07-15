@@ -95,7 +95,10 @@ def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,user):
     plt.title('Analysis Over Time')
     plt.legend()
     graph_path =  settings.MEDIA_ROOT +f'/images/graph_{user.id}.png'
-    plt.savefig(graph_path)
+    try:
+        plt.savefig(graph_path)
+    except:
+        return None
     graph_path=f'/media/images/graph_{user.id}.png'
     plt.close()
 

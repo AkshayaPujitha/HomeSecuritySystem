@@ -213,8 +213,12 @@
             <h2 class="heading">Analysis Over Time</h2>
           </div>
           <div class="graph-section">
+            {% if graph %}
             <img src="{{graph}}" alt="Analysis Graph">
           </div>
+          {% else %}
+          <div>No Analysis yet</div>
+          {% endif %}
         </div>
 
 </body>
