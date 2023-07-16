@@ -49,19 +49,17 @@ def dashboard(request):
     datesI=[event.timestamp.strftime('%Y-%m-%d') for event in intruder_images]
     event_cnt=[]
     unique_dates = []
+    
 
     for date in datesE + datesA+datesI:
         if date not in unique_dates:
             unique_dates.append(date)
 
-    
     for date in unique_dates:
         event_c=0
         for event in events:
             if event.timestamp.strftime('%Y-%m-%d')==date:
                 event_c+=1
-            else:
-                break
         event_cnt.append(event_c)
     alarm_cnt=[]
     for date in unique_dates:
@@ -69,8 +67,6 @@ def dashboard(request):
         for alarm in alarms:
             if alarm.timestamp.strftime('%Y-%m-%d')==date:
                 alarm_c+=1
-            else:
-                break
         alarm_cnt.append(alarm_c)
     
     intruder_cnt=[]
@@ -79,9 +75,8 @@ def dashboard(request):
         for intruder in intruder_images:
             if intruder.timestamp.strftime('%Y-%m-%d')==date:
                 intruder_c+=1
-            else:
-                break
         intruder_cnt.append(intruder_c)
+    print(event_cnt,alarm_cnt,intruder_cnt)
     graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,request.user)
 
     return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
