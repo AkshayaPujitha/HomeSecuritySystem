@@ -27,6 +27,7 @@ from django.utils import timezone
 from matplotlib import pyplot as plt
 from matplotlib import pyplot as plt
 import matplotlib
+from django.http import JsonResponse
 matplotlib.use('Agg')  # Set the backend to non-interactive
 
 
@@ -49,19 +50,17 @@ def dashboard(request):
     datesI=[event.timestamp.strftime('%Y-%m-%d') for event in intruder_images]
     event_cnt=[]
     unique_dates = []
+    
 
     for date in datesE + datesA+datesI:
         if date not in unique_dates:
             unique_dates.append(date)
 
-    
     for date in unique_dates:
         event_c=0
         for event in events:
             if event.timestamp.strftime('%Y-%m-%d')==date:
                 event_c+=1
-            else:
-                break
         event_cnt.append(event_c)
     alarm_cnt=[]
     for date in unique_dates:
@@ -69,8 +68,6 @@ def dashboard(request):
         for alarm in alarms:
             if alarm.timestamp.strftime('%Y-%m-%d')==date:
                 alarm_c+=1
-            else:
-                break
         alarm_cnt.append(alarm_c)
     
     intruder_cnt=[]
@@ -79,9 +76,8 @@ def dashboard(request):
         for intruder in intruder_images:
             if intruder.timestamp.strftime('%Y-%m-%d')==date:
                 intruder_c+=1
-            else:
-                break
         intruder_cnt.append(intruder_c)
+    print(event_cnt,alarm_cnt,intruder_cnt)
     graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,request.user)
 
     return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
@@ -95,7 +91,10 @@ def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,user):
     plt.title('Analysis Over Time')
     plt.legend()
     graph_path =  settings.MEDIA_ROOT +f'/images/graph_{user.id}.png'
-    plt.savefig(graph_path)
+    try:
+        plt.savefig(graph_path)
+    except:
+        return None
     graph_path=f'/media/images/graph_{user.id}.png'
     plt.close()
 
@@ -225,7 +224,8 @@ def trigger_intrusion_alarm(user,event):
 #Sends SMS to only verified numbers of twilio
 def send_sms(user,message):
     phone_number=user.phone_number
-    phone_number='+91'+phone_number
+    if phone_number[0]!='+':
+        phone_number='+91'+phone_number
     account_sid = TWILIO_ACCOUNT_SID
     auth_token = TWILIO_AUTH_TOKEN
     twilio_phone_number = TWILIO_PHONE_NUMBER
@@ -264,6 +264,56 @@ def uploaded_images(request):
         
     images=ImageUpload.objects.filter(user=request.user)
     return render(request,'uploaded_image.html',{'images':images})
+
+def graph(request):
+    return render(request,'graph.html')
+
+
+def data(request):
+    events=EventLog.objects.filter(user=request.user).order_by('-timestamp')
+    alarms=Alarm.objects.filter(user=request.user).order_by('-timestamp')
+    intruder_images=IntrusionImage.objects.filter(user=request.user).order_by('-timestamp')
+    datesE=[event.timestamp.strftime('%Y-%m-%d') for event in events]
+    datesA=[event.timestamp.strftime('%Y-%m-%d') for event in alarms]
+    datesI=[event.timestamp.strftime('%Y-%m-%d') for event in intruder_images]
+    event_cnt=[]
+    unique_dates = []
+    
+
+    for date in datesE + datesA+datesI:
+        if date not in unique_dates:
+            unique_dates.append(date)
+
+    for date in unique_dates:
+        event_c=0
+        for event in events:
+            if event.timestamp.strftime('%Y-%m-%d')==date:
+                event_c+=1
+        event_cnt.append(event_c)
+    alarm_cnt=[]
+    for date in unique_dates:
+        alarm_c=0
+        for alarm in alarms:
+            if alarm.timestamp.strftime('%Y-%m-%d')==date:
+                alarm_c+=1
+        alarm_cnt.append(alarm_c)
+    
+    intruder_cnt=[]
+    for date in unique_dates:
+        intruder_c=0
+        for intruder in intruder_images:
+            if intruder.timestamp.strftime('%Y-%m-%d')==date:
+                intruder_c+=1
+        intruder_cnt.append(intruder_c)
+    data = {
+        'dates': unique_dates,
+        'eventCount': event_cnt,
+        'alarmCount': alarm_cnt,
+        'intrusionCount': intruder_cnt
+    }
+
+    print(JsonResponse(data))
+    return JsonResponse(data)
 
 
 

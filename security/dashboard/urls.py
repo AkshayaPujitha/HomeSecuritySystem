@@ -11,6 +11,8 @@ urlpatterns=[
      path('upload/',views.upload,name='upload'),
      path('detect/',views.detect,name='detect'),
      path('uploaded_images/',views.uploaded_images,name='uploaded_images'),
+     path('graph',views.graph,name='generate_graph'),
+     path('data',views.data,name='data')
 
 ]
 

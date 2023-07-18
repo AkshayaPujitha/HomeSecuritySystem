@@ -213,10 +213,97 @@
             <h2 class="heading">Analysis Over Time</h2>
           </div>
           <div class="graph-section">
+            {% if graph %}
             <img src="{{graph}}" alt="Analysis Graph">
           </div>
+          {% else %}
+          <div>No Analysis yet</div>
+          {% endif %}
         </div>
+        <div class="heading-box">
+          <h2 class="heading">Analysis Over Time</h2>
+        </div>
+      <div style="width:100%">
+        <canvas id="myChart"></canvas>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script>
+    // Create the initial chart
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [], // Initialize the labels property as an empty array
+    datasets: [{
+      label: 'Events',
+      data: [],
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1
+    }, {
+      label: 'Alarms',
+      data: [],
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }, {
+      label: 'Intrusions',
+      data: [],
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+    // Function to fetch data from the server
+    function fetchData() {
+      // Make an AJAX request to retrieve the data
+      $.ajax({
+        url: '/dashboard/data',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+        console.log(data)
+          // Update the chart with the new data
+          console.log("here")
+          updateChart(data,myChart);
+        },
+        error: function(xhr, textStatus, error) {
+          console.error('Error:', error);
+        }
+      });
+    }
+
+    // Function to update the chart with new data
+    function updateChart(data,Chart) {
+        console.log("here",data)
+      console.log(Chart.data.labels)
+      console.log("here")
+      Chart.data.labels = data.dates;
+      Chart.data.datasets[0].data = data.eventCount;
+      Chart.data.datasets[1].data = data.alarmCount;
+      Chart.data.datasets[2].data =data.intrusionCount ;
+
+      // Update the chart
+      Chart.update();
+    }
+
+
+    // Fetch data and update the chart every 5 seconds
+    setInterval(fetchData, 500000);
+  </script>
+
+
+      </div>
 </body>
 
 </html>
