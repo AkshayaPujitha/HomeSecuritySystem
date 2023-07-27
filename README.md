@@ -46,6 +46,12 @@ Go to the project directory
   cd security
 ```
 
+Make migrations
+
+```bash
+  python manage.py migrate
+```
+
 Start the server
 
 ```bash
