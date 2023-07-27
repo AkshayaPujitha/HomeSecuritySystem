@@ -119,6 +119,7 @@
     padding: 5px;
     font-size: 12px;
   }
+ 
 
   /* Adjust styling as needed for event, alarm, and intruder content */
 </style>
@@ -208,23 +209,12 @@
         </div>
       </div>
       <div>
-        <div class="container1" style="background-color: #f0f0f0;">
-          <div class="heading-box">
-            <h2 class="heading">Analysis Over Time</h2>
-          </div>
-          <div class="graph-section">
-            {% if graph %}
-            <img src="{{graph}}" alt="Analysis Graph">
-          </div>
-          {% else %}
-          <div>No Analysis yet</div>
-          {% endif %}
-        </div>
+        
         <div class="heading-box">
           <h2 class="heading">Analysis Over Time</h2>
         </div>
       <div style="width:100%">
-        <canvas id="myChart"></canvas>
+        <canvas id="myChart" style="background-color: rgb(255, 255, 255);"></canvas>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -239,13 +229,13 @@ var myChart = new Chart(ctx, {
       label: 'Events',
       data: [],
       backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      borderColor: 'rgba(75, 192, 192, 1)',
+      borderColor: 'rgba(75, 192, 192, 1.5)',
       borderWidth: 1
     }, {
       label: 'Alarms',
       data: [],
       backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      borderColor: 'rgba(255, 99, 132, 1)',
+      borderColor: 'rgba(255, 99, 132, 1.5)',
       borderWidth: 1
     }, {
       label: 'Intrusions',
@@ -299,7 +289,7 @@ var myChart = new Chart(ctx, {
 
 
     // Fetch data and update the chart every 5 seconds
-    setInterval(fetchData, 500000);
+    setInterval(fetchData, 5000);
   </script>
 
 

@@ -77,7 +77,6 @@ def dashboard(request):
             if intruder.timestamp.strftime('%Y-%m-%d')==date:
                 intruder_c+=1
         intruder_cnt.append(intruder_c)
-    print(event_cnt,alarm_cnt,intruder_cnt)
     graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,request.user)
 
     return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
@@ -312,7 +311,7 @@ def data(request):
         'intrusionCount': intruder_cnt
     }
 
-    print(JsonResponse(data))
+    #print(JsonResponse(data))
     return JsonResponse(data)
 
 
