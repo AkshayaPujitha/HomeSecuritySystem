@@ -77,28 +77,9 @@ def dashboard(request):
             if intruder.timestamp.strftime('%Y-%m-%d')==date:
                 intruder_c+=1
         intruder_cnt.append(intruder_c)
-    graph_path=generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,request.user)
+    
 
-    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images,'graph':graph_path})
-
-def generate_graph(event_cnt,alarm_cnt,intruder_cnt,unique_dates,user):
-    plt.plot(unique_dates, event_cnt, label='Events')
-    plt.plot(unique_dates, alarm_cnt, label='Alarms')
-    plt.plot(unique_dates, intruder_cnt, label='Intruder Invasion')
-    plt.xlabel('Date')
-    plt.ylabel('Count')
-    plt.title('Analysis Over Time')
-    plt.legend()
-    graph_path =  settings.MEDIA_ROOT +f'/images/graph_{user.id}.png'
-    try:
-        plt.savefig(graph_path)
-    except:
-        return None
-    graph_path=f'/media/images/graph_{user.id}.png'
-    plt.close()
-
-    # Save the graph to a file
-    return graph_path
+    return render(request,'dashboard.html',{'events':events,'alarms':alarms,'images':intruder_images})
 
 
 def simulate_events(request):
