@@ -57,7 +57,6 @@ Start the server
 ```bash
   python manage.py runserver
 ```
-or
 ## Run Using Shell Script
 You can use shell script instead doing above steps
 
@@ -70,6 +69,38 @@ Execute the script by running:
   ./run_project.sh
 ```
 
+# User Authentication API Endpoints
+
+## Register a User
+
+### Request
+
+- Method: POST
+- URL: `/register/`
+- Headers: Content-Type: application/json
+
+```json
+{
+  "phone_number":123456789,
+  "password": "secretpassword"
+}
+
+```
+
+## Register a User
+
+### Request
+
+- Method: POST
+- URL: `/login/`
+- Headers: Content-Type: application/json
+
+```json
+{
+  "phone_number":123456789,
+  "password": "secretpassword"
+}
+```
 
 
 
