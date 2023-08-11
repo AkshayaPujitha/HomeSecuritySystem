@@ -72,9 +72,6 @@ Execute the script by running:
 # User Authentication API Endpoints
 
 ## Register a User
-
-### Request
-
 - Method: POST
 - URL: `/register/`
 - Headers: Content-Type: application/json
@@ -87,9 +84,7 @@ Execute the script by running:
 
 ```
 
-## Register a User
-
-### Request
+## Login a User
 
 - Method: POST
 - URL: `/login/`
