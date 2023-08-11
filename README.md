@@ -13,7 +13,6 @@ Home security systems provide families with security by alerting them by SMS in 
 - Face Recognition Model
 
 ## Run Using Shell Script
-You can use shell script instead doing above steps
 
 ```bash
   chmod +x run_project.sh
@@ -24,9 +23,9 @@ Execute the script by running:
   ./run_project.sh
 ```
 
-# User Authentication API Endpoints
+## User Authentication API Endpoints
 
-## Register a User
+### Register a User
 - Method: POST
 - URL: `/register/`
 - Headers: Content-Type: application/json
@@ -39,7 +38,7 @@ Execute the script by running:
 
 ```
 
-## Login a User
+### Login a User
 
 - Method: POST
 - URL: `/login/`
@@ -49,6 +48,19 @@ Execute the script by running:
 {
   "phone_number":123456789,
   "password": "secretpassword"
+}
+
+```
+### Verify OTP
+
+- Method: POST
+- URL: `/verify_otp/`
+- Headers: Content-Type: application/json
+
+```json
+{
+  "otp_code":1234
+  
 }
 ```
 
