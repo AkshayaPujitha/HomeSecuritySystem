@@ -12,54 +12,7 @@ Home security systems provide families with security by alerting them by SMS in 
 - User Activity Log
 - Face Recognition Model
 
-
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/AkshayaPujitha/HomeSecuritySystem.git
-```
-
-Create Virtual Environment
-
-```bash
-  virtualenv demoenv -p python3
-```
-
-Activate Environment
-
-```bash
-  source demoenv/bin/activate
-```
-
-Install dependencies
-
-```bash
-  pip install -r requirements.txt
-```
-
-Go to the project directory
-
-```bash
-  cd security
-```
-
-Make migrations
-
-```bash
-  python manage.py migrate
-```
-
-Start the server
-
-```bash
-  python manage.py runserver
-```
-or
 ## Run Using Shell Script
-You can use shell script instead doing above steps
 
 ```bash
   chmod +x run_project.sh
@@ -70,6 +23,46 @@ Execute the script by running:
   ./run_project.sh
 ```
 
+## User Authentication API Endpoints
+
+### Register a User
+- Method: POST
+- URL: `/register/`
+- Headers: Content-Type: application/json
+
+```json
+{
+  "phone_number":123456789,
+  "password": "secretpassword"
+}
+
+```
+
+### Login a User
+
+- Method: POST
+- URL: `/login/`
+- Headers: Content-Type: application/json
+
+```json
+{
+  "phone_number":123456789,
+  "password": "secretpassword"
+}
+
+```
+### Verify OTP
+
+- Method: POST
+- URL: `/verify_otp/`
+- Headers: Content-Type: application/json
+
+```json
+{
+  "otp_code":1234
+  
+}
+```
 
 
 
