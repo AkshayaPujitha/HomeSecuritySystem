@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import dj_database_url
 from pathlib import Path
 import os
 
@@ -40,13 +41,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'django_otp',
     'django_otp.plugins.otp_totp',
     'dashboard',
-    'securityapp',
-    
+    'securityapp',  
 ]
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_SECURE = True  # Adjust according to your project requirements
@@ -55,7 +56,9 @@ MIDDLEWARE = [
     
     'django_otp.middleware.OTPMiddleware',
     "django.middleware.security.SecurityMiddleware",
+   
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     'securityapp.middleware.VerifyOTPRedirectMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -95,7 +98,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+DATABASES["default"]=dj_database_url.parse("postgres://home_security_system_user:fE3hTA5S0eTp5bHm6WvrhNsxj7jzzD0A@dpg-cn6bf3mn7f5s73el6q00-a.oregon-postgres.render.com/home_security_system")
 
+#postgres://home_security_system_user:fE3hTA5S0eTp5bHm6WvrhNsxj7jzzD0A@dpg-cn6bf3mn7f5s73el6q00-a.oregon-postgres.render.com/home_security_system
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -150,9 +155,13 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-REST_FRAMEWORK={
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 

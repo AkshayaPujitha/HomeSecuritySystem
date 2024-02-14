@@ -10,7 +10,9 @@ click==8.1.4
 contourpy==1.1.0
 cycler==0.11.0
 defusedxml==0.7.1
+dj-database-url==2.1.0
 Django==4.2.3
+django-cors-headers==4.2.0
 django-otp==1.2.2
 django-otp-yubikey==1.0.1
 django-phonenumber-field==7.1.0
@@ -33,6 +35,7 @@ opencv-python==4.8.0.74
 packaging==23.1
 phonenumbers==8.13.15
 Pillow==10.0.0
+psycopg2-binary==2.9.9
 pycryptodome==3.18.0
 Pygments==2.15.1
 PyJWT==2.7.0
