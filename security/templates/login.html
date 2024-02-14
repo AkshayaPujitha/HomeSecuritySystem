@@ -143,34 +143,40 @@
     }
 
     
-        // Perform token authentication
-        function performTokenAuthentication() {
-            // Get the token from the local storage
-            var token = localStorage.getItem('token');
-            console.log("Token:", token);
-            var csrf_token=$('input[name="csrfmiddlewaretoken"]').val();
-            $.ajax({
-                type: 'GET',
-                url: '/dashboard/',
-                headers: {
-                    //'X-CSRFToken': csrf_token,
-                    'Authorization': `Bearer ${token}`
-
-                },
-                success: function(response) {
-                    console.log(response);
-                    console.log(token)
-                    console.log("Token authentication successful");
-                    var dashboardUrl = '/dashboard/';
-                    // Redirect to the dashboard with token authentication
-                    window.location.href = dashboardUrl;
-                },
-                error: function(error) {
-                    console.log(error.responseJSON);
-                    // Handle error response
-                }
-            });
-        }
+       // Perform token authentication
+function performTokenAuthentication() {
+  // Get the token from the local storage
+  var token = localStorage.getItem('token');
+  
+  
+  // Check if the token and CSRF token are available
+  if (token) {
+      $.ajax({
+          type: 'GET',
+          url: '/dashboard/',
+          headers: {
+              'Authorization': `token ${token}` // Ensure proper token format
+          },
+          xhrFields: {
+              withCredentials: true // Include credentials in CORS requests
+          },
+          success: function() {
+              
+              console.log("Token authentication successful");
+              var dashboardUrl = '/dashboard/';
+              // Redirect to the dashboard with token authentication
+              window.location.href = dashboardUrl;
+          },
+          error: function(error) {
+              console.log(error.responseJSON);
+              // Handle error response
+          }
+      });
+  } else {
+      console.log("Token or CSRF token not available");
+      // Handle the case where token or CSRF token is missing
+  }
+}
     });
     
    </script>
