@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import dj_database_url
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,7 +103,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-DATABASES["default"]=dj_database_url.parse("postgres://home_security_system_user:fE3hTA5S0eTp5bHm6WvrhNsxj7jzzD0A@dpg-cn6bf3mn7f5s73el6q00-a.oregon-postgres.render.com/home_security_system")
+DATABASES["default"]=dj_database_url.parse(os.getenv('POSTGRES_URL'))
 
 #postgres://home_security_system_user:fE3hTA5S0eTp5bHm6WvrhNsxj7jzzD0A@dpg-cn6bf3mn7f5s73el6q00-a.oregon-postgres.render.com/home_security_system
 
